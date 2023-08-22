@@ -14,10 +14,10 @@ import VolumeDownRounded from '@mui/icons-material/VolumeDownRounded';
 import { apiUrl } from '../../apiUrl/ApiUrl';
 
 
-export default function Audio({mp3Url}) {
+export default function AudioHasTimer({mp3Url,handlePlay}) {
   return (
     <Box sx={{ width: '100%', overflow: 'hidden',marginTop:'5px' }}>
-      <audio controls>
+      <audio controls onPlay={handlePlay}>
       <source src={`${apiUrl}${mp3Url}`} type="audio/mpeg" />
         <track kind="captions" src="/path/to/captions.vtt" srcLang="en" label="English" default/>
             Your browser does not support the audio element.

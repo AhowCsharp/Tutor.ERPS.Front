@@ -15,6 +15,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import SearchIcon from '@mui/icons-material/Search';
 import SendIcon from '@mui/icons-material/Send';
+import EditIcon from '@mui/icons-material/Edit';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -32,61 +33,230 @@ import { token } from '../../token/Token'
 
 import '@fontsource/roboto/700.css';
 
-const columns = [
-  { field: 'id', headerName: 'ID', width: 90 },
-  {
-    field: 'QuestionSentence',
-    headerName: '句子',
-    width: 150,
-    editable: true,
-  },
-  {
-    field: 'Mp3FileUrl',
-    headerName: 'mp3',
-    width: 400,
-    // renderCell: (params) => (
-    //     <Audio mp3Url={params.rows.mp3_FileUrl}>mp3</Audio>
-    //   ),
-  },
-  {
-    field: 'TypeName',
-    headerName: '類型',
-    width: 150,
-    editable: true,
-  },
-  {
-    field: 'Destory',
-    headerName: '刪除',
-    width: 150,
-    renderCell: (params) => (
-      <Button variant='contained' startIcon={<DeleteIcon />}>Delete</Button>
-    ),
-  },
-];
 
-// const rows = [
-//   { id: 1, name: 'Snow', account: 'Jon'}
-// ];
 
 export default function Sentence() {
   const [rows,setRows] = React.useState([])
   const [filterRows,setFilterRows] = React.useState([])
+  const [fileName, setFileName] = React.useState("");
   const [open, setOpen] = React.useState(false);
+  const [editItem,setEditItem] = React.useState(null);
   const [typeOptions , setTypeOptions] = React.useState([])
+  const [sentence,setSentence] = React.useState({
+    mp3File:null,
+    questionSentence:'',
+    questionSentenceChinese:'',
+    typeName:'',
+    questionAnswer:''
+  })
+  const columns = [
+    { field: 'id', headerName: 'ID', width: 50 },
+    {
+      field: 'questionSentence',
+      headerName: '問題句子',
+      width: 300,
+      editable: false,
+    },
+    {
+      field: 'questionAnswer',
+      headerName: '問題答案',
+      width: 150,
+      editable: false,
+    },
+    {
+      field: 'questionSentenceChinese',
+      headerName: '句子中文',
+      width: 150,
+      editable: false,
+    },
+    {
+      field: 'mp3FileUrl',
+      headerName: 'mp3',
+      width: 350,
+      editable: false,
+      renderCell: (params) => (
+          <Audio mp3Url={params.row.mp3FileUrl}>mp3</Audio>
+        ),
+    },
+    {
+      field: 'typeName',
+      headerName: '類型',
+      width: 150,
+      editable: false,
+    },
+    {
+      field: 'destory',
+      headerName: '刪除',
+      width: 150,
+      renderCell: (params) => (
+        <Button variant='contained' startIcon={<DeleteIcon />} onClick={() => handleDestory(params.row.id)}>Delete</Button>
+      ),
+    },
+    {
+      field: 'edit',
+      headerName: '修改',
+      width: 150,
+      renderCell: (params) => (
+        <Button variant='contained' startIcon={<EditIcon />} onClick={() => handleEdit(params.row)}>Edit</Button>
+      ),
+    },
+  ];
+  const handleDestory = async (id) => {
+    try {
+      const response = await axios.delete(`${apiUrl}/sentence/removesentence?id=${id}`, {
+        headers: {
+          // 這裡添加你需要的 headers，比如授權
+          'X-Ap-Token':`${token}`// 如果你使用的是 Bearer token
+        }
+      });
+  
+      if (response.status === 200) {
+        alert('刪除成功');
+        const newData = await axios.get(`${apiUrl}/sentence/info`, {
+          headers: {
+            'X-Ap-Token':`${token}`
+          }
+        });
+        setRows(newData.data.List);
+        setFilterRows(newData.data.List);
+      } else {
+        alert('刪除失敗')
+        // 這裡添加失敗後的處理代碼
+      }
+    } catch (error) {
+      console.error("An error occurred while deleting:", error);
+      // 這裡添加錯誤處理代碼
+    }
+  };
+  const handleEdit = async (row) => {
+    setEditItem(row);
+    setOpen(true);
+    console.log(row)
+  }
+  const sendSentenceAdd = async () => {
 
+    if(editItem === null) {
+      const formData = new FormData();
+      formData.append('mp3File', sentence.mp3File);  // Assuming sentence.mp3File is a file object
+      formData.append('questionSentence', sentence.questionSentence);
+      formData.append('questionSentenceChinese', sentence.questionSentenceChinese);
+      formData.append('typeName', sentence.typeName);
+      formData.append('questionAnswer', sentence.questionAnswer);
+      try {
+        const response = await axios.post(`${apiUrl}/sentence/upload`, formData, {
+          headers: {
+              'Content-Type': 'multipart/form-data',
+              'X-Ap-Token':`${token}`
+          }
+      });
+        if(response.status === 200) {
+          alert('成功')
+          const newData = await axios.get(`${apiUrl}/sentence/info`, {
+            headers: {
+              'X-Ap-Token':`${token}`
+            }
+          });
+          const newType = await axios.get(`${apiUrl}/sentence/type`, {
+            headers: {
+              'X-Ap-Token':`${token}`
+            }
+          });
+          setRows(newData.data.List);
+          setFilterRows(newData.data.List);
+          setTypeOptions(newType.data.List) 
+        }     
+      } catch (error) {
+        console.error('Error:', error);
+        alert('檔案類型不對、或是未選擇檔案')
+      }
+      handleClose();
+      setEditItem(null)
+      setFileName('');
+    }else {
+      const formData = new FormData();
+      formData.append('mp3File', editItem.mp3File);  // Assuming sentence.mp3File is a file object
+      formData.append('questionSentence', editItem.questionSentence);
+      formData.append('questionSentenceChinese', editItem.questionSentenceChinese);
+      formData.append('typeName', editItem.typeName);
+      formData.append('questionAnswer', editItem.questionAnswer);
+      formData.append('id', editItem.id);
+      try {
+        const response = await axios.post(`${apiUrl}/sentence/updatesentence`, formData, {
+          headers: {
+              'Content-Type': 'multipart/form-data',
+              'X-Ap-Token':`${token}`
+          }
+      });
+        if(response.status === 200) {
+          const newData = await axios.get(`${apiUrl}/sentence/info`, {
+            headers: {
+              'X-Ap-Token':`${token}`
+            }
+          });
+          const newType = await axios.get(`${apiUrl}/sentence/type`, {
+            headers: {
+              'X-Ap-Token':`${token}`
+            }
+          });
+          alert('成功')
+          setRows(newData.data.List);
+          setFilterRows(newData.data.List);
+          setTypeOptions(newType.data.List) 
+        }
+        
+      } catch (error) {
+        console.error('Error:', error);
+        alert('檔案類型不對、或是未選擇檔案')
+      }
+      handleClose();
+      setEditItem(null)
+      setFileName('');
+    }
+
+  };
+  
   const fileInput = useRef(null);
   const handleButtonClick = () => {
     fileInput.current.click();
   };
 
   const handleFileChange = (event) => {
-    const fileName = event.target.files[0]?.name;
-    if (fileName) {
-      // 这里您可以处理文件，例如将其上传到服务器或读取其内容
-      console.log(fileName);
+    const file = event.target.files[0];
+    if (event.target.files && event.target.files[0]) {
+      if(editItem === null) {
+        setFileName(event.target.files[0].name);
+        setSentence((prevData) => ({
+          ...prevData,
+          mp3File: file,
+        }));
+      }else {
+        setFileName(event.target.files[0].name);
+        setEditItem((prevData) => ({
+          ...prevData,
+          mp3File: file,
+          mp3FileName:event.target.files[0].name
+        }));
+      }
+    }else {
+      alert('請選擇檔案')
     }
   };
 
+  const handleInputChange = (event, propertyName) => {
+    const value = event.target.value;
+    if(editItem === null) {
+      setSentence((prevData) => ({
+        ...prevData,
+        [propertyName]: value,
+      }));
+    }else {
+      setEditItem((prevData) => ({
+        ...prevData,
+        [propertyName]: value,
+      }));
+    }
+
+  };
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -94,6 +264,7 @@ export default function Sentence() {
 
   const handleClose = () => {
     setOpen(false);
+    setEditItem(null)
   };
 
 
@@ -114,9 +285,9 @@ export default function Sentence() {
         });
         // 檢查響應的結果，並設置到 state
         if (response.status === 200) {
-          setRows(response.data.Datas);
-          setFilterRows(response.data.Datas);
-          setTypeOptions(responseType.data.Datas)
+          setRows(response.data.List);
+          setFilterRows(response.data.List);
+          setTypeOptions(responseType.data.List) 
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -150,7 +321,7 @@ export default function Sentence() {
               disableRowSelectionOnClick
           />
         <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>句子新增</DialogTitle>
+        <DialogTitle>{editItem!==null?'句子修改':'句子新增'}</DialogTitle>
         <DialogContent>
           <DialogContentText>
           請確認音檔、跟句子是否對應
@@ -159,9 +330,11 @@ export default function Sentence() {
             autoFocus
             margin="dense"
             id="questionSentence"
-            label="句子"
+            label="英文問題句子"
             fullWidth
+            value={editItem !== null?editItem.questionSentence:sentence.questionSentence}
             variant="standard"
+            onChange={(e) => handleInputChange(e, 'questionSentence')}
           />
           <TextField
             autoFocus
@@ -170,22 +343,26 @@ export default function Sentence() {
             label="句子中文"
             fullWidth
             variant="standard"
+            value={editItem !== null?editItem.questionSentenceChinese:sentence.questionSentenceChinese}
+            onChange={(e) => handleInputChange(e, 'questionSentenceChinese')}
           />
           <TextField
             autoFocus
             margin="dense"
             id="questionAnswer"
-            label="單字中文"
+            label="問題答案"
             fullWidth
             variant="standard"
+            value={editItem !== null?editItem.questionAnswer:sentence.questionAnswer}
+            onChange={(e) => handleInputChange(e, 'questionAnswer')}
           />
           <FormControl variant="standard" sx={{ m: 1, minWidth: 120 , marginTop: '25px'}}>
             <InputLabel id="demo-simple-select-standard-label">類型</InputLabel>
             <Select
               labelId="demo-simple-select-standard-label"
               id="demo-simple-select-standard"
-              value={50}
-              // onChange={handleChange}
+              value={editItem !== null?editItem.typeName:sentence.typeName}
+              onChange={(e) => handleInputChange(e, 'typeName')}
               label="類型"
             >
             {typeOptions.map(item => (
@@ -205,6 +382,7 @@ export default function Sentence() {
           <TextField
             variant="outlined"
             label="Attach a file"
+            value={fileName}
             style={{ marginTop: '20px',marginLeft:'50px' }}
             InputProps={{
               endAdornment: (
@@ -219,7 +397,7 @@ export default function Sentence() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleClose}>Subscribe</Button>
+          <Button onClick={sendSentenceAdd}>Send</Button>
         </DialogActions>
       </Dialog>
     </Box>

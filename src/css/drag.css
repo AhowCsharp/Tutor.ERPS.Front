@@ -1,0 +1,8 @@
+.draggable-item {
+    cursor: grab; /* 改變滑鼠指針，表示這是一個可以拖曳的項目 */
+  }
+  
+.droppable-area {
+border: 2px dashed gray; /* 使用虛線邊框來表示這是一個可放置的區域 */
+}
+  

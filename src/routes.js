@@ -13,12 +13,24 @@ import Student from './erps/student/Student'
 import StudentLog from './erps/student/StudentLog';
 import Sentence from './erps/sentence/Sentence';
 import Kind from './erps/kind/Kind';
+import StudentLogList from './erps/studentLogList/StudentLogList'
+import StudentTest from './studentComponent/StudentTest';
+import AnswerLog from './studentComponent/AnswerLog';
+import StudentGame from './studentComponent/StudentGame';
 
 
 // ----------------------------------------------------------------------
 
 export default function Router() {
   const routes = useRoutes([
+    {
+      path: '/',
+      element: <Navigate to="/login" replace />,
+    },
+    {
+      path: 'login',
+      element: <LoginPage />,
+    },
     {
       path: '/dashboard',
       element: <DashboardLayout />,
@@ -32,11 +44,19 @@ export default function Router() {
         { path: 'studentLog', element: <StudentLog /> },
         { path: 'sentence', element: <Sentence /> },
         { path: 'kind', element: <Kind /> },
+        { path: 'loglist', element: <StudentLogList /> },
       ],
     },
     {
-      path: 'login',
-      element: <LoginPage />,
+      path: '/student',
+      element: <DashboardLayout />,
+      children: [
+        { element: <Navigate to="/student/app" />, index: true },
+        { path: 'app', element: <DashboardAppPage /> },
+        { path: 'test', element: <StudentTest /> },
+        { path: 'log', element: <AnswerLog /> },
+        { path: 'game', element: <StudentGame /> },
+      ],
     },
     {
       element: <SimpleLayout />,

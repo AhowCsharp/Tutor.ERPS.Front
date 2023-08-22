@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import { Toolbar, Tooltip, IconButton, OutlinedInput, InputAdornment } from '@mui/material';
-import Iconify from '../../components/iconify/Iconify';
+import Iconify from '../components/iconify/Iconify';
 
 const StyledRoot = styled(Toolbar)(({ theme }) => ({
   height: 96,
@@ -26,7 +26,7 @@ const StyledSearch = styled(OutlinedInput)(({ theme }) => ({
   },
 }));
 
-export default function SentenceSearch({ rows, setFilterRows }) {
+export default function QuestionSearch({ rows, setFilterRows }) {
   const [filterValue, setFilterValue] = useState('');
 
 
@@ -39,13 +39,24 @@ export default function SentenceSearch({ rows, setFilterRows }) {
       setFilterRows(rows);
     } else {
       // 過濾學生列表
-      const filteredSentences = rows.filter((Sentence) =>
-        Sentence.questionSentence.toLowerCase().includes(searchValue.toLowerCase())||
-        Sentence.typeName.toString().includes(searchValue)
-      );
-
+      const filteredStudents = rows.filter((item) => {
+        // 如果搜索值是"NULL"，仅返回isPassing字段为null的项
+        if (searchValue === "n") {
+          return item.isPassing === null;
+        }
+        
+        // 对于questionNum字段
+        const matchQuestionNum = item.questionNum.toString().includes(searchValue);
+      
+        // 对于isPassing字段
+        const matchIsPassing = item.isPassing !== null ? item.isPassing.toString().includes(searchValue) : false;
+      
+        // 如果任一匹配项为真，则返回true
+        return matchQuestionNum || matchIsPassing;
+      });
+      
       // 將過濾後的學生列表返回給父組件
-      setFilterRows(filteredSentences);
+      setFilterRows(filteredStudents);
     }
   };
 
@@ -54,7 +65,7 @@ export default function SentenceSearch({ rows, setFilterRows }) {
       <StyledSearch
         value={filterValue}
         onChange={handleFilter}
-        placeholder="Search Sentence..."
+        placeholder="Search Question..."
         startAdornment={
           <InputAdornment position="start">
             <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled', width: 20, height: 20 }} />

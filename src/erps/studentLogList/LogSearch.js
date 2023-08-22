@@ -26,7 +26,7 @@ const StyledSearch = styled(OutlinedInput)(({ theme }) => ({
   },
 }));
 
-export default function SentenceSearch({ rows, setFilterRows }) {
+export default function LogSearch({ rows, setFilterRows }) {
   const [filterValue, setFilterValue] = useState('');
 
 
@@ -34,27 +34,30 @@ export default function SentenceSearch({ rows, setFilterRows }) {
   const handleFilter = (event) => {
     const searchValue = event.target.value;
     setFilterValue(searchValue);
+    console.log(rows);
+  
     if (searchValue === '') {
-      // 如果搜索值為空，返回原始行
+      // 如果搜索值为空，返回原始行
       setFilterRows(rows);
     } else {
-      // 過濾學生列表
-      const filteredSentences = rows.filter((Sentence) =>
-        Sentence.questionSentence.toLowerCase().includes(searchValue.toLowerCase())||
-        Sentence.typeName.toString().includes(searchValue)
-      );
-
-      // 將過濾後的學生列表返回給父組件
-      setFilterRows(filteredSentences);
+      // 过滤学生列表
+      const filteredArray = rows.filter((item) => (
+          item.questionType.toLowerCase().includes(searchValue.toLowerCase()) ||
+          item.status.toString().includes(searchValue)
+        ));
+  
+      // 将过滤后的学生列表返回给父组件
+      setFilterRows(filteredArray);
     }
   };
+  
 
   return (
     <StyledRoot>
       <StyledSearch
         value={filterValue}
         onChange={handleFilter}
-        placeholder="Search Sentence..."
+        placeholder="Search log..."
         startAdornment={
           <InputAdornment position="start">
             <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled', width: 20, height: 20 }} />

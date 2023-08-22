@@ -14,7 +14,7 @@ import Scrollbar from '../../../components/scrollbar';
 import NavSection from '../../../components/nav-section';
 //
 import navConfig from './config';
-
+import navStudentConfig from './studentConfig';
 // ----------------------------------------------------------------------
 
 const NAV_WIDTH = 280;
@@ -64,7 +64,7 @@ export default function Nav({ openNav, onCloseNav }) {
 
             <Box sx={{ ml: 2 }}>
               <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
-                {account.displayName}
+                {sessionStorage.getItem("userName")}
               </Typography>
 
               <Typography variant="body2" sx={{ color: 'text.secondary' }}>
@@ -74,8 +74,8 @@ export default function Nav({ openNav, onCloseNav }) {
           </StyledAccount>
         </Link>
       </Box>
-
-      <NavSection data={navConfig} />
+      {sessionStorage.getItem('jwtToken') !== null? <NavSection data={navConfig} /> :<NavSection data={navStudentConfig} />}
+      
 
       <Box sx={{ flexGrow: 1 }} />
 
