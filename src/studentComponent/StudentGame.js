@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useState,useRef,useEffect} from 'react';
 import Box from '@mui/material/Box';
+import axios from 'axios';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import { isMobile,isTablet } from 'react-device-detect';
@@ -18,6 +19,7 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import AnswerDrag from './AnswerDrag';
 import GameMp3Player from './GameMp3Player';
+
 
 const StyledRating = styled(Rating)({
     '& .MuiRating-iconFilled': {
@@ -150,6 +152,9 @@ export default function StudentGame() {
           }else {
             alert('0分');
             setLife(life-1)
+            // try {
+            //     response = await axios.post('')
+            // }
             setAudioName(null);setGameAns(null);
           }
         }
@@ -168,7 +173,7 @@ export default function StudentGame() {
           clearInterval(interval);
         };
       }, [mobileGameStart]);
-    
+
     
   return (
     <>
@@ -226,7 +231,7 @@ export default function StudentGame() {
                                     <div>abroad</div>
                                 </Grid>
                                 <Grid item style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    <GameMp3Player mp3Url={'/recordingfile/abroad.mp3'} fileName={'abroad'} setAudioName={setAudioName}/>
+                                    {mobileGameStart === true?<GameMp3Player mp3Url={'/recordingfile/abroad.mp3'} fileName={'abroad'} setAudioName={setAudioName}/>:null}
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -251,7 +256,7 @@ export default function StudentGame() {
                                     zIndex: 1,  
                                     color: 'white',
                                     fontSize: '18px',
-                                    width:'100%'
+                                    width:'90%'
                                 }}
                                 onClick={() => setGameAns('abroad')}
                                 >
@@ -279,7 +284,7 @@ export default function StudentGame() {
                                     zIndex: 1,  
                                     color: 'white',
                                     fontSize: '18px',
-                                    width:'100%'
+                                    width:'90%'
                                 }}
                                 onClick={() => setGameAns('按钮6666')}
                                 >

@@ -56,6 +56,11 @@ const navConfig = [
     path: '/dashboard/kind',
     icon: icon('ic_disabled'),
   },
+  {
+    title: '遊戲管理',
+    path: '/dashboard/gameManage',
+    icon: icon('ic_disabled'),
+  },
 ];
 
 export default navConfig;

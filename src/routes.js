@@ -17,6 +17,7 @@ import StudentLogList from './erps/studentLogList/StudentLogList'
 import StudentTest from './studentComponent/StudentTest';
 import AnswerLog from './studentComponent/AnswerLog';
 import StudentGame from './studentComponent/StudentGame';
+import GameManage from './erps/gameManage/GameManage';
 
 
 // ----------------------------------------------------------------------
@@ -45,6 +46,7 @@ export default function Router() {
         { path: 'sentence', element: <Sentence /> },
         { path: 'kind', element: <Kind /> },
         { path: 'loglist', element: <StudentLogList /> },
+        { path: 'gameManage', element: <GameManage /> },
       ],
     },
     {
