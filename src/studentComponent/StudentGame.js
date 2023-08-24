@@ -17,7 +17,7 @@ import Stack from '@mui/material/Stack';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import AnswerDrag from './AnswerDrag';
-
+import GameMp3Player from './GameMp3Player';
 
 const StyledRating = styled(Rating)({
     '& .MuiRating-iconFilled': {
@@ -136,6 +136,39 @@ export default function StudentGame() {
         height: typeof window !== 'undefined' ? window.innerHeight : 0,
       });
     const [mobileGameStart,setMobileGameStart] = useState(false);
+    const [timer, setTimer] = useState(0);
+    const [audioName, setAudioName] = useState('');
+    const [gameAns, setGameAns] = useState('');
+    const [life, setLife] = useState(3);
+
+    useEffect(() => {
+        if (audioName && gameAns) {
+            console.log(audioName,gameAns)
+          if(audioName === gameAns) {
+            alert('100分')
+            setAudioName(null);setGameAns(null);
+          }else {
+            alert('0分');
+            setLife(life-1)
+            setAudioName(null);setGameAns(null);
+          }
+        }
+      }, [audioName, gameAns]);
+
+    useEffect(() => {
+        let interval;
+    
+        if (mobileGameStart) {
+          interval = setInterval(() => {
+            setTimer(prevTimer => prevTimer + 1);
+          }, 1000);
+        }
+    
+        return () => {
+          clearInterval(interval);
+        };
+      }, [mobileGameStart]);
+    
     
   return (
     <>
@@ -154,61 +187,106 @@ export default function StudentGame() {
                         }}>
                             {mobileGameStart === true?
                             <>
-                                <div style={{marginTop:'2%'}}>
-                                    LEVEL 1
+                                <Typography component="legend" style={{ display: 'block',marginRight:'10px'}}>
+                                    Level 1-1
+                                </Typography>
                                 <Typography component="legend" style={{ display: 'block'}}>
-                                    {sessionStorage.getItem('userName')}的生命值:
+                                    {sessionStorage.getItem('userName')}生命值:
                                 </Typography>
                                 <StyledRating
                                     name="customized-color"
-                                    defaultValue={3}
+                                    value={life}
                                     max={3}
                                     getLabelText={(value) => `${value} Heart${value !== 1 ? 's' : ''}`}
                                     precision={0.5}
                                     icon={<FavoriteIcon fontSize="inherit" />}
                                     emptyIcon={<FavoriteBorderIcon fontSize="inherit" />}
                                 /> 
-                                </div>
+                                <Typography variant="h6" gutterBottom style={{color:'white',marginLeft:'15px',marginTop:'8px'}}>
+                                        SCORE:
+                                </Typography>
                             </>: 
                                 <Typography variant="h4" gutterBottom>
                                         準備作答
                                 </Typography>}
                         </Grid>
-                        <Grid item xs={12}>
-                                <Typography variant="h1" gutterBottom style={{color:'white',marginLeft:'30px'}}>
-                                        SCORE:
-                                </Typography>
+                        <Grid item xs={4} style={{ color: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                            <Grid container direction="column" alignItems="center" style={{ color: 'white' }}>
+                                <Grid item  xs={3}>
+                                    <div>666</div>
+                                </Grid>
+                                <Grid item style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                    <GameMp3Player mp3Url={'/recordingfile/abroad.mp3'} fileName={'666'} setAudioName={setAudioName}/>
+                                </Grid>
+                            </Grid>
                         </Grid>
-                        <Grid item xs={7} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center',padding:'5px', position: 'relative' }}>
+                        <Grid item xs={4} style={{ color: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                            <Grid container direction="column" alignItems="center"style={{ color: 'white' }}>
+                                <Grid item  xs={3} >
+                                    <div>abroad</div>
+                                </Grid>
+                                <Grid item style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                    <GameMp3Player mp3Url={'/recordingfile/abroad.mp3'} fileName={'abroad'} setAudioName={setAudioName}/>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <Grid container>
+                        <Grid item xs={4}>
+                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
                             <img
-                            src={mobileGameStart === true? '/images/openbox.png':'/images/box.png'}
-                            alt={`fire`}
-                            style={{ width: '40%', height: 'auto' }}
+                                src={mobileGameStart === true ? '/images/openbox.png' : '/images/box.png'}
+                                alt={`fire`}
+                                style={{ width: '80%', height: 'auto' }}
                             />
                             {mobileGameStart === true && (
-                                <Button 
-                                    variant="outlined"
-                                    color="primary"
-                                    style={{
-                                        position: 'absolute',  // 绝对定位
-                                        top: '50%',  // 从顶部偏移 50%
-                                        left: '50%',  // 从左侧偏移 50%
-                                        transform: 'translate(-50%, -50%)',  // 使用 transform 居中
-                                        zIndex: 1,  // 如果需要，可以设置 z-index // 设置背景色为白色
-                                        color: 'white', // 设置字体颜色为黑色
-                                        fontSize:'18px'
-                                    }}
+                                <Button
+                                variant="outlined"
+                                color="primary"
+                                style={{
+                                    position: 'absolute', 
+                                    top: '50%',  
+                                    left: '50%', 
+                                    transform: 'translate(-50%, -50%)', 
+                                    zIndex: 1,  
+                                    color: 'white',
+                                    fontSize: '18px',
+                                    width:'100%'
+                                }}
+                                onClick={() => setGameAns('abroad')}
                                 >
-                                    按钮
-                                </Button>  
-                            )} 
+                                abroad
+                                </Button>
+                            )}
+                            </div>
                         </Grid>
-                        <Grid item xs={5} style={{ color: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center',padding:'5px' }}>
-                            <audio controls style={{ maxWidth: '100%', width: '100%' }}>
-                                <source src="your-audio-file.mp3" type="audio/mpeg" />
-                                <track kind="captions" src="/path/to/captions.vtt" srcLang="en" label="English" default/>
-                                Your browser does not support the audio element.
-                            </audio>
+                        <Grid item xs={4}>
+                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
+                            <img
+                                src={mobileGameStart === true ? '/images/openbox.png' : '/images/box.png'}
+                                alt={`fire`}
+                                style={{ width: '80%', height: 'auto' }}
+                            />
+                            {mobileGameStart === true && (
+                                <Button
+                                variant="outlined"
+                                color="primary"
+                                style={{
+                                    position: 'absolute', 
+                                    top: '50%',  
+                                    left: '50%', 
+                                    transform: 'translate(-50%, -50%)', 
+                                    zIndex: 1,  
+                                    color: 'white',
+                                    fontSize: '18px',
+                                    width:'100%'
+                                }}
+                                onClick={() => setGameAns('按钮6666')}
+                                >
+                                按钮6666
+                                </Button>
+                            )}
+                            </div>
                         </Grid>
                     </Grid>
                 </Box>
