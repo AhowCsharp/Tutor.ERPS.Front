@@ -3,13 +3,30 @@ import { useState,useRef,useEffect} from 'react';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
+import { isMobile,isTablet } from 'react-device-detect';
 import { useSpring, animated } from '@react-spring/web'
 import Button from '@mui/material/Button';
 import NotStartedIcon from '@mui/icons-material/NotStarted';
+import SportsMmaIcon from '@mui/icons-material/SportsMma';
+import { styled } from '@mui/material/styles';
+import Rating from '@mui/material/Rating';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import AnswerDrag from './AnswerDrag';
+
+
+const StyledRating = styled(Rating)({
+    '& .MuiRating-iconFilled': {
+      color: '#ff6d75',
+    },
+    '& .MuiRating-iconHover': {
+      color: '#ff3d47',
+    },
+  });
 
 const Alert = React.forwardRef((props, ref) => <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />);
 
@@ -114,232 +131,266 @@ export default function StudentGame() {
         });
     };
 
+    const [windowDimensions, setWindowDimensions] = useState({
+        width: typeof window !== 'undefined' ? window.innerWidth : 0,
+        height: typeof window !== 'undefined' ? window.innerHeight : 0,
+      });
+    const [mobileGameStart,setMobileGameStart] = useState(false);
     
-
   return (
     <>
-    <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%' }}>      
-        <Box sx={{
-                width: '20%',
-                height: '800px', 
-            }}>
-            <Box sx={{ 
-                width: '20%',
-                height: '200px', 
-            }}/>
-            <Box sx={{ 
-                width: '100%',
-                height: '100px', 
-                display: 'flex',             // 使用 Flex 布局
-                justifyContent: 'center',    // 在水平方向上居中
-                alignItems: 'center',
-            }}>
-                <Button variant="contained" endIcon={<NotStartedIcon />} onClick={startGameClick}>
-                    {show === true? 'start':'restart'}
+        {isMobile && !isTablet ? (
+            <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%',position: 'relative' }}>
+                <Box sx={{width: '100%', height:`${windowDimensions.height}px`,backgroundColor:'black'}}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} style={{ 
+                            display: 'flex', 
+                            justifyContent: 'center', 
+                            alignItems: 'center',
+                            padding: '20px', 
+                            height: 'auto', 
+                            color: 'white', 
+                            fontSize: '32px' // 或者使用像 '24px' 这样的具体值
+                        }}>
+                            {mobileGameStart === true?
+                            <>
+                                <div style={{marginTop:'2%'}}>
+                                    LEVEL 1
+                                <Typography component="legend" style={{ display: 'block'}}>
+                                    {sessionStorage.getItem('userName')}的生命值:
+                                </Typography>
+                                <StyledRating
+                                    name="customized-color"
+                                    defaultValue={3}
+                                    max={3}
+                                    getLabelText={(value) => `${value} Heart${value !== 1 ? 's' : ''}`}
+                                    precision={0.5}
+                                    icon={<FavoriteIcon fontSize="inherit" />}
+                                    emptyIcon={<FavoriteBorderIcon fontSize="inherit" />}
+                                /> 
+                                </div>
+                            </>: 
+                                <Typography variant="h4" gutterBottom>
+                                        準備作答
+                                </Typography>}
+                        </Grid>
+                        <Grid item xs={12}>
+                                <Typography variant="h1" gutterBottom style={{color:'white',marginLeft:'30px'}}>
+                                        SCORE:
+                                </Typography>
+                        </Grid>
+                        <Grid item xs={7} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center',padding:'5px', position: 'relative' }}>
+                            <img
+                            src={mobileGameStart === true? '/images/openbox.png':'/images/box.png'}
+                            alt={`fire`}
+                            style={{ width: '40%', height: 'auto' }}
+                            />
+                            {mobileGameStart === true && (
+                                <Button 
+                                    variant="outlined"
+                                    color="primary"
+                                    style={{
+                                        position: 'absolute',  // 绝对定位
+                                        top: '50%',  // 从顶部偏移 50%
+                                        left: '50%',  // 从左侧偏移 50%
+                                        transform: 'translate(-50%, -50%)',  // 使用 transform 居中
+                                        zIndex: 1,  // 如果需要，可以设置 z-index // 设置背景色为白色
+                                        color: 'white', // 设置字体颜色为黑色
+                                        fontSize:'18px'
+                                    }}
+                                >
+                                    按钮
+                                </Button>  
+                            )} 
+                        </Grid>
+                        <Grid item xs={5} style={{ color: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center',padding:'5px' }}>
+                            <audio controls style={{ maxWidth: '100%', width: '100%' }}>
+                                <source src="your-audio-file.mp3" type="audio/mpeg" />
+                                <track kind="captions" src="/path/to/captions.vtt" srcLang="en" label="English" default/>
+                                Your browser does not support the audio element.
+                            </audio>
+                        </Grid>
+                    </Grid>
+                </Box>
+                {mobileGameStart === false && (
+                <Button 
+                    variant="outlined"
+                    color="error"
+                    style={{
+                        position: 'absolute',  // 绝对定位
+                        top: '50%',  // 从顶部偏移50%
+                        left: '50%',  // 从左侧偏移50%
+                        transform: 'translate(-50%, -50%)',  // 使用 transform 进行微调
+                        zIndex: 2 , // 设置 z-index 以确保按钮出现在其他元素之上
+                        fontSize:'24px'
+                    }}
+                    endIcon={<SportsMmaIcon style={{ fontSize: '40px' }}/>}
+                    onClick={()=>setMobileGameStart(true)}
+                >
+                    Game Start
                 </Button>
-            </Box>
-            <Box sx={{ 
-                width: '100%',
-                height: '100px', 
-                display: 'flex',             // 使用 Flex 布局
-                justifyContent: 'center',    // 在水平方向上居中
-                alignItems: 'center', 
-                position: 'relative'
-            }}>
-                <img
-                    ref={ballRef}
-                    src='/images/ball.png'
-                    alt='answer'
-                    style={{position: 'absolute', top: `${initialBallPosition + ballYPosition}px`, width:70 , height:70}}
-                />
-                {answer && (
-                    <span style={{
-                        position: 'absolute',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        backgroundColor:'white',
-                        zIndex: 1,
-                        border: '2px solid black',
-                        padding:'2px',    // 添加边框
-                        borderRadius: '8px',
-                        top: `${initialBallPosition + ballYPosition+30}px`, 
-                    }}>
-                        {answer}
-                    </span>
                 )}
             </Box>
-            <Box sx={{ 
-                width: '20%',
-                height: '300px', 
-            }}/>
-            <Box sx={{ 
-                width: '100%',
-                height: '100px', 
-                display: 'flex',             // 使用 Flex 布局
-                justifyContent: 'center',    // 在水平方向上居中
-                alignItems: 'center', 
-                position: 'relative'
-            }}>
-                <img
-                    ref={hoopRef}
-                    src='/images/hoop.png'
-                    alt='answer'
-                    style={{ position: 'absolute', top: '0px',width:100 , height:100}}
-                />
+        ) : isTablet ? (
+        <div>你正在使用平板设备。</div>
+        ) : (
+            <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%' }}>      
+            <Box sx={{
+                    width: '20%',
+                    height: '800px', 
+                }}>
+                <Box sx={{ 
+                    width: '20%',
+                    height: '200px', 
+                }}/>
+                <Box sx={{ 
+                    width: '100%',
+                    height: '100px', 
+                    display: 'flex',             // 使用 Flex 布局
+                    justifyContent: 'center',    // 在水平方向上居中
+                    alignItems: 'center',
+                }}>
+                    <Button variant="contained" endIcon={<NotStartedIcon />} onClick={startGameClick}>
+                        {show === true? 'start':'restart'}
+                    </Button>
+                </Box>
+                <Box sx={{ 
+                    width: '100%',
+                    height: '100px', 
+                    display: 'flex',             // 使用 Flex 布局
+                    justifyContent: 'center',    // 在水平方向上居中
+                    alignItems: 'center', 
+                    position: 'relative'
+                }}>
+                    <img
+                        ref={ballRef}
+                        src='/images/ball.png'
+                        alt='answer'
+                        style={{position: 'absolute', top: `${initialBallPosition + ballYPosition}px`, width:70 , height:70}}
+                    />
+                    {answer && (
+                        <span style={{
+                            position: 'absolute',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            backgroundColor:'white',
+                            zIndex: 1,
+                            border: '2px solid black',
+                            padding:'2px',    // 添加边框
+                            borderRadius: '8px',
+                            top: `${initialBallPosition + ballYPosition+30}px`, 
+                        }}>
+                            {answer}
+                        </span>
+                    )}
+                </Box>
+                <Box sx={{ 
+                    width: '20%',
+                    height: '300px', 
+                }}/>
+                <Box sx={{ 
+                    width: '100%',
+                    height: '100px', 
+                    display: 'flex',             // 使用 Flex 布局
+                    justifyContent: 'center',    // 在水平方向上居中
+                    alignItems: 'center', 
+                    position: 'relative'
+                }}>
+                    <img
+                        ref={hoopRef}
+                        src='/images/hoop.png'
+                        alt='answer'
+                        style={{ position: 'absolute', top: '0px',width:100 , height:100}}
+                    />
+                </Box>
             </Box>
-        </Box>
-        <Box
-            sx={{
-                width: '80%',
-                height: '800px',
-                backgroundColor: 'white',
-                borderLeft: '3px solid black',
-                borderRight: '3px solid black',
-                borderBottom: '3px solid black',
-                borderRadius: '0 0 8px 8px',
-                marginLeft: 'auto',
-                backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(${process.env.PUBLIC_URL}/images/gameBack.png)`,
-                backgroundSize: 'cover',
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'center',
-                flexGrow: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between', 
-                position: 'relative',
+            <Box
+                sx={{
+                    width: '80%',
+                    height: '800px',
+                    backgroundColor: 'white',
+                    borderLeft: '3px solid black',
+                    borderRight: '3px solid black',
+                    borderBottom: '3px solid black',
+                    borderRadius: '0 0 8px 8px',
+                    marginLeft: 'auto',
+                    backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(${process.env.PUBLIC_URL}/images/gameBack.png)`,
+                    backgroundSize: 'cover',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'center',
+                    flexGrow: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between', 
+                    position: 'relative',
+                    
+                }}  
+            > 
+                { !show && (
+                    <img
+                        src="/images/alarm.gif"
+                        alt="your_alt_text_here"
+                        style={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            zIndex: 1  // 如果需要让图片显示在其他元素之上
+                        }}
+                    />
+                )}
+                            { !show && (
+                                <Alert severity="warning">作答時間已結束 Time Up</Alert>
+                )}           
+                <Grid container spacing={2}>
+                {words.map((word, index) => {
+                    const imageName = imageNames[index % imageNames.length];
+                    const initPos = initialPositions[index];
+                    return (
+                        show && (
+                        <Grid item xs={1} key={index} sx={{marginRight:'1%'}}>
+                            <animated.div
+                                // eslint-disable-next-line no-return-assign
+                                ref={(el) => tetrisRefs.current[index] = el}
+                                style={{
+                                    width: 96,
+                                    height: 96,
+                                    borderRadius: 8,
+                                    ...springs1,
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    textAlign: 'center',
+                                    backgroundImage: `url(${process.env.PUBLIC_URL}/images/${imageName}.png)`,
+                                    backgroundSize: 'cover',
+                                    backgroundRepeat: 'no-repeat',
+                                    backgroundPosition: 'center',
+                                }}
+                            >                                              
+                                        <Button variant="contained" size="medium" style={{backgroundColor:'white',color:'black'}} onClick={()=>sendAnswer(word)}>
+                                            {word}
+                                        </Button>
+                            </animated.div>
+                        </Grid>)
+                    );
+                })}                 
+                </Grid>
                 
-            }}  
-        > 
-            { !show && (
-                <img
-                    src="/images/alarm.gif"
-                    alt="your_alt_text_here"
-                    style={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        zIndex: 1  // 如果需要让图片显示在其他元素之上
-                    }}
-                />
-            )}
-                        { !show && (
-                            <Alert severity="warning">作答時間已結束 Time Up</Alert>
-            )}           
-            <Grid container spacing={2}>
-            {words.map((word, index) => {
-                const imageName = imageNames[index % imageNames.length];
-                const initPos = initialPositions[index];
-                return (
-                    show && (
-                    <Grid item xs={1} key={index} sx={{marginRight:'1%'}}>
-                        <animated.div
-                            // eslint-disable-next-line no-return-assign
-                            ref={(el) => tetrisRefs.current[index] = el}
-                            style={{
-                                width: 96,
-                                height: 96,
-                                borderRadius: 8,
-                                ...springs1,
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                textAlign: 'center',
-                                backgroundImage: `url(${process.env.PUBLIC_URL}/images/${imageName}.png)`,
-                                backgroundSize: 'cover',
-                                backgroundRepeat: 'no-repeat',
-                                backgroundPosition: 'center',
-                            }}
-                        >                                              
-                                    <Button variant="contained" size="medium" style={{backgroundColor:'white',color:'black'}} onClick={()=>sendAnswer(word)}>
-                                        {word}
-                                    </Button>
-                        </animated.div>
-                    </Grid>)
-                );
-            })}                 
-            </Grid>
-            
-            <div ref={containerRef} style={{ display: 'flex', justifyContent: 'space-around', alignSelf: 'flex-end',width:'100%' }}>
-            {Array.from({ length: numImages }).map((_, index) => (
-                <img
-                ref={gifRef}
-                key={index}
-                src='/images/campfire.gif'
-                alt={`fire`}
-                style={{ width: 64, height: 64 }}
-                />
-            ))}
-            </div>
-        </Box>
-    </Box>
+                <div ref={containerRef} style={{ display: 'flex', justifyContent: 'space-around', alignSelf: 'flex-end',width:'100%' }}>
+                {Array.from({ length: numImages }).map((_, index) => (
+                    <img
+                    ref={gifRef}
+                    key={index}
+                    src='/images/campfire.gif'
+                    alt={`fire`}
+                    style={{ width: 64, height: 64 }}
+                    />
+                ))}
+                </div>
+            </Box>
+            </Box>
+        )}
     </>
   );
 }
 
-
-// const DraggableButton = ({ word,initX,initY }) => {
-//     const [isDragging, setIsDragging] = useState(false);
-//     const [initialX, setInitialX] = useState(0);
-//     const [initialY, setInitialY] = useState(0);
-//     const [buttonPosition, setButtonPosition] = useState({ left: initX, top: initY });
-//     const [currentX, setCurrentX] = useState(0);
-//     const [currentY, setCurrentY] = useState(0);
-  
-//     const handleMouseDown = (event) => {
-//       setIsDragging(true);
-//       setInitialX(event.clientX);
-//       setInitialY(event.clientY);
-//     };
-
-//     useEffect(() => {
-//         if (initX !== null && initY !== null) {
-//           setButtonPosition({ left: initX, top: initY });
-//         }
-//     }, [initX, initY]);
-  
-//     const handleMouseMove = (event) => {
-//       if (!isDragging) return;
-  
-//       const offsetX = event.clientX - initialX;
-//       const offsetY = event.clientY - initialY;
-  
-//       setButtonPosition((prevPosition) => ({
-//         left: prevPosition.left + offsetX,
-//         top: prevPosition.top + offsetY,
-//       }));
-//       setCurrentX(prevX => prevX + offsetX);
-//       setCurrentY(prevY => prevY + offsetY);
-//       setInitialX(event.clientX);
-//       setInitialY(event.clientY);
-//     };
-  
-//     const handleMouseUp = () => {
-//       setIsDragging(false);
-//     };
-
-//     return (
-//         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'absolute', width: '100%', height: '100%' }}>
-//         <button
-//           type="button"
-//           id="draggableButton"
-//           style={{
-//             backgroundColor: 'rgba(255, 255, 255, 1)',
-//             border: '3px solid black',
-//             color: 'black',
-//             cursor: 'pointer',
-//             fontSize:'20px',
-//             width: 'auto', // 定义按钮宽度
-//             height: 'auto', // 定义按钮高度
-//             marginLeft: `${buttonPosition.left}px`, // 调整 left 和 top 属性
-//             marginTop: `${buttonPosition.top}px`, // 调整 left 和 top 属性
-//           }}
-//           onMouseDown={handleMouseDown}
-//           onMouseMove={handleMouseMove}
-//           onMouseUp={handleMouseUp}
-//         >
-//           {word}
-//         </button>
-//       </div>
-//     );
-//   };
