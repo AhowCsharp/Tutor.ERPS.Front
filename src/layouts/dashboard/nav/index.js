@@ -53,9 +53,11 @@ export default function Nav({ openNav, onCloseNav }) {
         '& .simplebar-content': { height: 1, display: 'flex', flexDirection: 'column' },
       }}
     >
-      <Box sx={{ px: 2.5, py: 3, display: 'inline-flex' }}>
-        <Logo />
-      </Box>
+    <Box sx={{ px: 2.5, py: 3, display: 'flex', alignItems: 'center' }}>
+        <img src='/images/oli48x48.ico' alt='歐美補習' style={{ marginRight: '10px' }} />
+        <span style={{ fontWeight: 'bold' }}>歐美補習班學生系統</span>
+    </Box>
+
 
       <Box sx={{ mb: 5, mx: 2.5 }}>
         <Link underline="none">

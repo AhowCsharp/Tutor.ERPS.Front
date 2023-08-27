@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
-import { faker } from '@faker-js/faker';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { faker } from '@faker-js/faker';
 import html2pdf from 'html2pdf.js';
 // @mui
 import { useTheme } from '@mui/material/styles';
@@ -23,12 +23,12 @@ import {
 
 // ----------------------------------------------------------------------
 
-export default function DashboardAppPage() {
+export default function StudentDashboardAppPage() {
   const theme = useTheme();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = sessionStorage.getItem('jwtToken');
+    const token = sessionStorage.getItem('studentAccount');
     if (!token) {
       navigate('/login');
     }

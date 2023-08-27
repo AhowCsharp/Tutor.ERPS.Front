@@ -58,6 +58,14 @@ const columns = [
   export default function AnswerLog() {
     const [rows,setRows] = React.useState([])
     const [filterRows,setFilterRows] = React.useState([])
+    const navigate = useNavigate();
+
+    useEffect(() => {
+      const token = sessionStorage.getItem('studentAccount');
+      if (!token) {
+        navigate('/login');
+      }
+    }, [navigate]);
 
 
     

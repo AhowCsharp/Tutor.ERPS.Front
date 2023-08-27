@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useEffect,useRef  } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
@@ -49,6 +50,14 @@ export default function Student() {
     status:1,
     id:0
   })
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = sessionStorage.getItem('jwtToken');
+    if (!token) {
+      navigate('/login');
+    }
+  }, [navigate]);
   const columns = [
     { field: 'id', headerName: 'ID', width: 90 },
     {

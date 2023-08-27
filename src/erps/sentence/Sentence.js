@@ -1,4 +1,5 @@
 import { useEffect,useRef  } from 'react';
+import { useNavigate } from 'react-router-dom';
 import * as React from 'react';
 import axios from 'axios';
 import Box from '@mui/material/Box';
@@ -49,6 +50,14 @@ export default function Sentence() {
     typeName:'',
     questionAnswer:''
   })
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = sessionStorage.getItem('jwtToken');
+    if (!token) {
+      navigate('/login');
+    }
+  }, [navigate]);
   const columns = [
     { field: 'id', headerName: 'ID', width: 50 },
     {

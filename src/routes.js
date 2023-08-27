@@ -18,6 +18,8 @@ import StudentTest from './studentComponent/StudentTest';
 import AnswerLog from './studentComponent/AnswerLog';
 import StudentGame from './studentComponent/StudentGame';
 import GameManage from './erps/gameManage/GameManage';
+import StudentDashboardAppPage from './pages/StudentDashboardAppPage'
+import StudentProfile from './studentComponent/StudentProfile';
 
 
 // ----------------------------------------------------------------------
@@ -38,9 +40,9 @@ export default function Router() {
       children: [
         { element: <Navigate to="/dashboard/app" />, index: true },
         { path: 'app', element: <DashboardAppPage /> },
-        { path: 'user', element: <UserPage /> },
-        { path: 'products', element: <ProductsPage /> },
-        { path: 'blog', element: <BlogPage /> },
+        // { path: 'user', element: <UserPage /> },
+        // { path: 'products', element: <ProductsPage /> },
+        // { path: 'blog', element: <BlogPage /> },
         { path: 'studentManage', element: <Student /> },
         { path: 'studentLog', element: <StudentLog /> },
         { path: 'sentence', element: <Sentence /> },
@@ -54,16 +56,17 @@ export default function Router() {
       element: <DashboardLayout />,
       children: [
         { element: <Navigate to="/student/app" />, index: true },
-        { path: 'app', element: <DashboardAppPage /> },
+        { path: 'app', element: <StudentDashboardAppPage /> },
         { path: 'test', element: <StudentTest /> },
         { path: 'log', element: <AnswerLog /> },
         { path: 'game', element: <StudentGame /> },
+        { path: 'profile', element: <StudentProfile /> },
       ],
     },
     {
       element: <SimpleLayout />,
       children: [
-        { element: <Navigate to="/dashboard/app" />, index: true },
+        { element: <Navigate to="/login" />, index: true },
         { path: '404', element: <Page404 /> },
         { path: '*', element: <Navigate to="/404" /> },
       ],

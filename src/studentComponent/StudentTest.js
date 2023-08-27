@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import ButtonGroup from '@mui/material/ButtonGroup';
@@ -33,6 +34,14 @@ export default function StudentTest() {
     const [filterRows,setFilterRows] = React.useState([])
     const [timerId, setTimerId] = React.useState(null);
     const [seconds, setSeconds] = React.useState(0);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+      const token = sessionStorage.getItem('studentAccount');
+      if (!token) {
+        navigate('/login');
+      }
+    }, [navigate]);
 
     const handlePlay = () => {
         // 初始化秒數
@@ -69,8 +78,9 @@ export default function StudentTest() {
 
     const handleGetTest = async (type) => {
         setChooseType(type);
+        const id = sessionStorage.getItem('id');
         try {
-            const response = await axios.get(`${apiUrl}/sentence/testinfo?type=${type}&account=${sessionStorage.getItem('studentAccount')}&name=${sessionStorage.getItem('userName')}`, 
+            const response = await axios.get(`${apiUrl}/sentence/testinfo?type=${type}&id=${id}`, 
             {
             headers: {
                 // 這裡添加你需要的 headers，比如授權
@@ -185,7 +195,8 @@ export default function StudentTest() {
             level:sessionStorage.getItem('level'),
             answer,
             questionType:typeName,
-            questionNum
+            questionNum,
+            id:sessionStorage.getItem('id')
         };
         console.log(Data)
         clearInterval(timerId);

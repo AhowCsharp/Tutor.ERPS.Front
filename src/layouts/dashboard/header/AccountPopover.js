@@ -41,6 +41,19 @@ export default function AccountPopover() {
     setOpen(null);
     navigate('/login', { replace: true });
   };
+
+  const handleHome = (option) => {
+    if (option === 'Home') {
+      setOpen(null);
+      navigate('/student/app', { replace: true });
+  } else if (option === "Profile") {
+    setOpen(null);
+    navigate('/student/profile');
+  } else {
+    setOpen(null);
+  }
+    
+  };
   return (
     <>
       <IconButton
@@ -95,7 +108,7 @@ export default function AccountPopover() {
 
         <Stack sx={{ p: 1 }}>
           {MENU_OPTIONS.map((option) => (
-            <MenuItem key={option.label} onClick={handleClose}>
+            <MenuItem key={option.label} onClick={()=>handleHome(option.label)}>
               {option.label}
             </MenuItem>
           ))}

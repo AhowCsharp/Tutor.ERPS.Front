@@ -60,6 +60,14 @@ const columns = [
     const [filterRows,setFilterRows] = React.useState([])
     const location = useLocation();
     const studentId = location.state.studentId;
+    const navigate = useNavigate();
+
+    useEffect(() => {
+      const token = sessionStorage.getItem('jwtToken');
+      if (!token) {
+        navigate('/login');
+      }
+    }, [navigate]);
 
     
     useEffect(() => {

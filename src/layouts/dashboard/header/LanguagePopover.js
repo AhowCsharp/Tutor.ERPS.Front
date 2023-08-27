@@ -8,19 +8,19 @@ import { Box, MenuItem, Stack, IconButton, Popover } from '@mui/material';
 const LANGS = [
   {
     value: 'en',
-    label: 'English',
-    icon: '/assets/icons/ic_flag_en.svg',
+    label: 'Taiwaness',
+    icon: '/assets/icons/ic_flag_taiwan.svg',
   },
-  {
-    value: 'de',
-    label: 'German',
-    icon: '/assets/icons/ic_flag_de.svg',
-  },
-  {
-    value: 'fr',
-    label: 'French',
-    icon: '/assets/icons/ic_flag_fr.svg',
-  },
+  // {
+  //   value: 'de',
+  //   label: 'German',
+  //   icon: '/assets/icons/ic_flag_de.svg',
+  // },
+  // {
+  //   value: 'fr',
+  //   label: 'French',
+  //   icon: '/assets/icons/ic_flag_fr.svg',
+  // },
 ];
 
 // ----------------------------------------------------------------------

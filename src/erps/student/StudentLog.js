@@ -27,6 +27,12 @@ export default function StudentLog() {
   const [filterRows,setFilterRows] = React.useState([])
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const token = sessionStorage.getItem('jwtToken');
+    if (!token) {
+      navigate('/login');
+    }
+  }, [navigate]);
   const columns = [
     { field: 'id', headerName: 'ID', width: 90 },
     {
