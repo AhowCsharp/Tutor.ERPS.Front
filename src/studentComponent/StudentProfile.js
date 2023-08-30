@@ -113,13 +113,20 @@ export default function StudentProfile() {
   return (
     <>
     <Box
-      component="form"
       sx={{
-        '& .MuiTextField-root': { m: 1, width: '60%' },
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center', // 用于垂直居中
       }}
-      noValidate
-      autoComplete="off"
     >
+      <Box
+        component="form"
+        sx={{
+          '& .MuiTextField-root': { m: 1, width: '60%' },
+        }}
+        noValidate
+        autoComplete="off"
+      >
       <div>
         <TextField
           required
@@ -157,9 +164,12 @@ export default function StudentProfile() {
         />
       </div>
     </Box>
-    <Button variant="contained" endIcon={<SendIcon />} style={{marginLeft:'30%'}} onClick={handleUpdate}>
+    <Button variant="contained" endIcon={<SendIcon />}         sx={{
+          margin: '20px 0', // 上下外边距为20px，左右外边距为自动
+        }} onClick={handleUpdate}>
     Send
     </Button>
+    </Box>
     </>
   );
 }

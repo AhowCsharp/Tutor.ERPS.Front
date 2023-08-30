@@ -50,7 +50,7 @@ export default function LoginPage() {
   return (
     <>
       <Helmet>
-        <title> 歐美留學外語後台系統</title>
+        <title> 歐美多益學苑學生系統</title>
       </Helmet>
 
       <StyledRoot>
@@ -74,7 +74,7 @@ export default function LoginPage() {
         <Container maxWidth="sm">
           <StyledContent>
             <Typography variant="h4" gutterBottom>            
-              歐美留學外語後台系統
+            歐美多益學苑學生系統
             </Typography>
 
             {/* <Typography variant="body2" sx={{ mb: 5 }}>

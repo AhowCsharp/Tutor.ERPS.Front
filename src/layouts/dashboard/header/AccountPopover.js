@@ -45,7 +45,7 @@ export default function AccountPopover() {
   const handleHome = (option) => {
     if (option === 'Home') {
       setOpen(null);
-      navigate('/student/app', { replace: true });
+      navigate('/student/choose', { replace: true });
   } else if (option === "Profile") {
     setOpen(null);
     navigate('/student/profile');

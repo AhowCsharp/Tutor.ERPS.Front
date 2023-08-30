@@ -22,6 +22,15 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
+import ListItemText from '@mui/material/ListItemText';
+import ListItem from '@mui/material/ListItem';
+import List from '@mui/material/List';
+import Divider from '@mui/material/Divider';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import Slide from '@mui/material/Slide';
 import DialogTitle from '@mui/material/DialogTitle';
 import AnswerDrag from './AnswerDrag';
 import AnswerMatch from './AnswerMatch'
@@ -33,6 +42,9 @@ import GameOverView from '../animate/GameOverView';
 import { apiUrl } from '../apiUrl/ApiUrl';
 import { token } from '../token/Token'
 
+// const Transition = React.forwardRef(function Transition(props, ref) {
+//     return <Slide direction="up" ref={ref} {...props} />;
+//   });
 
 const StyledRating = styled(Rating)({
     '& .MuiRating-iconFilled': {
@@ -50,6 +62,7 @@ export default function StudentGame() {
     const tetrisRefs = useRef([]);
     const containerRef = useRef(null);
     const [numImages, setNumImages] = useState(0);
+    const [introdeuce,setIntroduce] = useState(false);
     const [tetrisY,setTetrisY] = useState(0);
     const [show,setShow] = useState(true);
     const [gifY,setGifY] = useState(0);
@@ -102,6 +115,10 @@ export default function StudentGame() {
           window.removeEventListener('beforeunload', handleBeforeUnload);
         };
       }, []);
+
+    useEffect(() => {
+        setIntroduce(true);
+    }, []);
 
     const fetchDataAndUpdate = async (level) => {
         setDialogOpen(false);
@@ -557,7 +574,57 @@ export default function StudentGame() {
                     <DialogActions>
                     <Button onClick={() =>fetchDataAndUpdate(gameLevel)}>OK</Button>
                     </DialogActions>
-                </Dialog>                         
+                </Dialog>  
+
+                <Dialog
+                    
+                    open={introdeuce}
+                    onClose={()=>setIntroduce(false)}
+                    // TransitionComponent={Transition}
+                >
+                    <AppBar sx={{ position: 'relative' }}>
+                    <Toolbar>
+                        <IconButton
+                        edge="start"
+                        color="inherit"
+                        onClick={()=>setIntroduce(false)}
+                        aria-label="close"
+                        >
+                        <CloseIcon />
+                        </IconButton>
+                        <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+                        遊戲規則說明
+                        </Typography>
+                        <Button autoFocus color="inherit" onClick={()=>setIntroduce(false)}>
+                        我已了解
+                        </Button>
+                    </Toolbar>
+                    </AppBar>
+                    <List>
+                    <ListItem button>
+                        <ListItemText primary="規則一" secondary="請先點選音檔再點擊箱子 配對成功即可得分" />
+                    </ListItem>
+                    <Divider />
+                    <ListItem button>
+                        <ListItemText
+                        primary="規則二"
+                        secondary="不論是音檔或是單字 以最後一個點擊的為主做配對"
+                        />
+                    </ListItem>
+                    <ListItem button>
+                        <ListItemText
+                        primary="規則三"
+                        secondary="玩家有三條命 三條命用光即重來 連續答對三次則combo  總分+30"
+                        />
+                    </ListItem>
+                    <ListItem button>
+                        <ListItemText
+                        primary="規則四"
+                        secondary="難度會漸增 請努力闖關  加油!!"
+                        />
+                    </ListItem>
+                    </List>
+                </Dialog>                          
             </Box>
         ) : isMobile && !isTablet && isGameOver ? (
             <Box sx={{width: '100%', height:`${windowDimensions.height}px`,backgroundColor:'black',position: 'relative'}}>

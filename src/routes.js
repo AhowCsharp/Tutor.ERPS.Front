@@ -20,6 +20,7 @@ import StudentGame from './studentComponent/StudentGame';
 import GameManage from './erps/gameManage/GameManage';
 import StudentDashboardAppPage from './pages/StudentDashboardAppPage'
 import StudentProfile from './studentComponent/StudentProfile';
+import ChooseModel from './studentComponent/ChooseModel';
 
 
 // ----------------------------------------------------------------------
@@ -36,10 +37,10 @@ export default function Router() {
     },
     {
       path: '/dashboard',
-      element: <DashboardLayout />,
+      element: <DashboardLayout isStudent={false}/>,
       children: [
         { element: <Navigate to="/dashboard/app" />, index: true },
-        { path: 'app', element: <DashboardAppPage /> },
+        { path: 'app', element: <DashboardAppPage isStudent={false}/> },
         // { path: 'user', element: <UserPage /> },
         // { path: 'products', element: <ProductsPage /> },
         // { path: 'blog', element: <BlogPage /> },
@@ -53,14 +54,15 @@ export default function Router() {
     },
     {
       path: '/student',
-      element: <DashboardLayout />,
+      element: <DashboardLayout isStudent/>,
       children: [
-        { element: <Navigate to="/student/app" />, index: true },
-        { path: 'app', element: <StudentDashboardAppPage /> },
+        { element: <Navigate to="/student/choose" />, index: true },
+        // { path: 'app', element: <StudentDashboardAppPage /> },
         { path: 'test', element: <StudentTest /> },
         { path: 'log', element: <AnswerLog /> },
         { path: 'game', element: <StudentGame /> },
         { path: 'profile', element: <StudentProfile /> },
+        { path: 'choose', element: <ChooseModel /> },
       ],
     },
     {
