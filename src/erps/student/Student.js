@@ -320,7 +320,7 @@ export default function Student() {
     }  
   };
   return (
-    <Box sx={{ height: 600, width: '100%' }}>
+    <Box sx={{ height: 700, width: '100%' }}>
         <Typography style={{ textAlign: 'center' }} variant="h1" gutterBottom>
         學員列表
         </Typography>
@@ -349,11 +349,11 @@ export default function Student() {
             initialState={{
             pagination: {
                 paginationModel: {
-                pageSize: 15,
+                pageSize: 100,
                 },
             },
             }}
-            pageSizeOptions={[10,15,20]}            
+            pageSizeOptions={[100,200,300]}            
             disableRowSelectionOnClick
             processRowUpdate={processRowUpdate}
             onProcessRowUpdateError={error=>alert(error)}

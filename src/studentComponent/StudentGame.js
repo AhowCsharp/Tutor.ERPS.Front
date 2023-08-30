@@ -158,6 +158,9 @@ export default function StudentGame() {
         }else {
             sessionStorage.setItem('gameLevel','1');
             setScore(0);
+            setPassCount(0);
+            setGameLevel('1');
+            setbigLevel('1');
         }
     }, [isGameOver]); // 将 isGameOver 添加到依赖数组中，确保在其变化时执行
     

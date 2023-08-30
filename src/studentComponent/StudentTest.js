@@ -149,7 +149,7 @@ export default function StudentTest() {
                     <strong>若要搜尋1.未通關請輸入:f 2.已通關:t 3.尚未作答:n</strong>
                 </Alert>
             </Box>
-            <Box sx={{ height: 600, width: '100%' }}>
+            <Box sx={{ height: 300, width: '100%' }}>
                 <QuestionSearch rows={questions} setFilterRows={setFilterRows}/>
                 <DataGrid
                     rows={filterRows}
@@ -158,11 +158,11 @@ export default function StudentTest() {
                     initialState={{
                     pagination: {
                         paginationModel: {
-                        pageSize: 5,
+                        pageSize: 1,
                         },
                     },
                     }}
-                    pageSizeOptions={[5]}
+                    pageSizeOptions={[1]}
                     disableRowSelectionOnClick
                 />            
             </Box>

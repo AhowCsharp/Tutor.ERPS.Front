@@ -106,44 +106,10 @@ export default function LoginPage() {
           </StyledContent>
         </Container>
       </StyledRoot>
-      <FileUploadForm/>
     </>
   );
 }
 
 
-function FileUploadForm() {
-  const [selectedFile, setSelectedFile] = useState(null);
-
-  function handleFileSelect(event) {
-    setSelectedFile(event.target.files[0]);
-  }
-
-  function handleSubmit(event) {
-    event.preventDefault();
-    // 將選擇的檔案傳遞給後端進行處理
-    const formData = new FormData();
-    formData.append('file', selectedFile);
-    // 使用axios發送POST請求
-    axios.post('https://localhost:7105/WeatherForecast/upload', formData)
-    .then(response => {
-      console.log(response.data);
-    })
-    .catch(error => {
-      console.error(error);
-    });
-  }
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="input1">
-        選擇檔案:
-        <input type="file" id="input1" name="name" onChange={handleFileSelect} />
-      </label>
-      <br />
-      <button type="submit" disabled={!selectedFile}>上傳檔案</button>
-    </form>
-  );
-}
 
 
