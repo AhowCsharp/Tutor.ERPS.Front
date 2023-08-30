@@ -21,12 +21,19 @@ export default function ChooseModel() {
     };
 
     return (
+      <>
+      <div style={{
+        position: 'relative', 
+                            width: '100%',
+                            height: deviceType === 'mobile' ? '80px' : '130px',
+                            backgroundColor: 'lightblue',
+                        }}/>
       <Box
         sx={{
           display: 'flex',
           flexDirection: 'column',
           width: '100%',
-          height: '100%',
+          height: deviceType === 'mobile' ? '100%' : '800px',
           backgroundColor: 'transparent',
         //   '&:hover': {
         //     backgroundColor: 'primary.main',
@@ -76,6 +83,7 @@ export default function ChooseModel() {
                         borderBottomRightRadius: deviceType === 'tablet' ? '10px' : '20px',
                         border: 'none',
                         fontSize: deviceType === 'mobile' ? '20px' : deviceType === 'tablet' ? '40px' : '60px',
+                        fontWeight: 'bold'
                     }}
                     >
                     初學者<br/>
@@ -94,7 +102,8 @@ export default function ChooseModel() {
                             justifyContent: 'center',
                             alignItems: 'center',
                             color: 'black',
-                            fontSize: deviceType === 'mobile' ? '20px' : deviceType === 'tablet' ? '27px' : '35px',
+                            fontWeight: 'bold',
+                            fontSize: deviceType === 'mobile' ? '20px' : deviceType === 'tablet' ? '27px' : '35px'
                         }}
                         >
                         單字
@@ -113,6 +122,7 @@ export default function ChooseModel() {
                             alignItems: 'center',
                             color: 'black',
                             fontSize: deviceType === 'mobile' ? '20px' : deviceType === 'tablet' ? '27px' : '35px',
+                            fontWeight: 'bold'
                         }}
                         >
                         遊戲
@@ -155,6 +165,7 @@ export default function ChooseModel() {
                         borderBottomRightRadius: deviceType === 'tablet' ? '10px' : '20px',
                         border: 'none' ,
                         fontSize:deviceType === 'mobile' ? '20px' : deviceType === 'tablet' ? '40px' : '60px',
+                        fontWeight: 'bold'
                     }}
                     >
                     進階者<br/>
@@ -174,6 +185,7 @@ export default function ChooseModel() {
                             alignItems: 'center',
                             color: 'black',
                             fontSize: deviceType === 'mobile' ? '20px' : deviceType === 'tablet' ? '27px' : '35px',
+                            fontWeight: 'bold'
                         }}
                         >
                         聽力
@@ -192,6 +204,7 @@ export default function ChooseModel() {
                             alignItems: 'center',
                             color: 'black',
                             fontSize:deviceType === 'mobile' ? '20px' : deviceType === 'tablet' ? '27px' : '35px',
+                            fontWeight: 'bold'
                         }}
                         >
                         練習
@@ -213,5 +226,6 @@ export default function ChooseModel() {
             </Button>
         </Box>
       </Box>
+      </>
     );
   }
