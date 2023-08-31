@@ -2,7 +2,8 @@ import { Helmet } from 'react-helmet-async';
 // @mui
 import { styled } from '@mui/material/styles';
 import React, { useState } from 'react';
-import { Link, Container, Typography, Divider, Stack, Button } from '@mui/material';
+import { Link, Container, Typography, Divider, Stack, Button,Box } from '@mui/material';
+
 import axios from 'axios';
 // hooks
 import useResponsive from '../hooks/useResponsive';
@@ -52,7 +53,9 @@ export default function LoginPage() {
       <Helmet>
         <title> 歐美多益學苑學生系統</title>
       </Helmet>
-
+      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                <img src='/images/favicon-48x48.ico' alt='歐美補習' style={{ marginRight: '10px' ,width:'50%', height:'50%'}} />
+            </div> 
       <StyledRoot>
         {/* <Logo
           sx={{
@@ -71,8 +74,11 @@ export default function LoginPage() {
           </StyledSection>
         )}
 
+            
+
         <Container maxWidth="sm">
-          <StyledContent>         
+          <StyledContent> 
+      
             <Typography variant="h4" gutterBottom>            
             歐美多益學苑學生系統
             </Typography>

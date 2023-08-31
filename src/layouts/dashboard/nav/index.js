@@ -54,7 +54,7 @@ export default function Nav({ openNav, onCloseNav }) {
       }}
     >
     <Box sx={{ px: 2.5, py: 3, display: 'flex', alignItems: 'center' }}>
-        <img src='/images/oli48x48.ico' alt='歐美補習' style={{ marginRight: '10px' }} />
+        <img src='/images/favicon-48x48.ico' alt='歐美補習' style={{ marginRight: '10px' }} />
         <span style={{ fontWeight: 'bold' }}>歐美多益學苑學生系統</span>
     </Box>
 
