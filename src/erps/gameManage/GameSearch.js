@@ -34,10 +34,16 @@ export default function GameSearch({ rows, setFilterRows }) {
   const handleFilter = (event) => {
     const searchValue = event.target.value;
     setFilterValue(searchValue);
-    console.log(rows)
     if (searchValue === '') {
       // 如果搜索值為空，返回原始行
       setFilterRows(rows);
+    }else if (searchValue === 'mp3') {
+      const filteredStudents = rows.filter((item) =>
+      item.mp3Url === null  // 新增這個條件
+    );
+
+    // 將過濾後的學生列表返回給父組件
+      setFilterRows(filteredStudents);
     } else {
       // 過濾學生列表
       const filteredStudents = rows.filter((item) =>

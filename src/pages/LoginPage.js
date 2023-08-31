@@ -72,7 +72,7 @@ export default function LoginPage() {
         )}
 
         <Container maxWidth="sm">
-          <StyledContent>
+          <StyledContent>         
             <Typography variant="h4" gutterBottom>            
             歐美多益學苑學生系統
             </Typography>

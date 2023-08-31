@@ -7,6 +7,8 @@ import { DataGrid } from '@mui/x-data-grid';
 import Button from '@mui/material/Button';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import SaveIcon from '@mui/icons-material/Save';
+import ClearIcon from '@mui/icons-material/Clear';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -30,6 +32,7 @@ import '@fontsource/roboto/700.css';
 export default function Kind() {
   const [rows,setRows] = React.useState([])
   const [filterRows,setFilterRows] = React.useState(rows)
+  const [editedRows, setEditedRows] = React.useState([]);
   const [open, setOpen] = React.useState(false);
   const [newType,setNewType] = React.useState({
     type:'',
@@ -167,6 +170,51 @@ export default function Kind() {
     };
     fetchData();
   }, []); 
+  const handleSave = async () => {
+    const modifiedRows = editedRows.map(item => ({
+      ...item,
+    }));
+    console.log(modifiedRows)
+    try {
+      const response = await axios.post(`${apiUrl}/sentence/edittype`, modifiedRows, {
+        headers: {
+            'X-Ap-Token':`${token}`,  // 
+            'Content-Type': 'application/json'
+        }
+    });
+      if(response.status === 200) {     
+        const newData = await axios.get(`${apiUrl}/sentence/type`, {
+          headers: {
+            'X-Ap-Token':`${token}`
+          }
+        });
+        alert('修改成功');
+        setRows(newData.data.List);
+        setFilterRows(newData.data.List);
+        setEditedRows([]);
+      }else {
+        alert('修改失敗');
+      }
+
+    } catch (error) {
+      console.error('Failed to fetch user data:', error);
+      alert('修改失敗');
+    }
+  };
+  const processRowUpdate = (newRow, oldRow) => {
+    // 透過 newRow 的 id 找到 editedRows 陣列中的索引
+    const index = editedRows.findIndex(row => row.id === newRow.id);
+  
+    // 若找到相同的 id，則先刪除
+    if (index > -1) {
+      editedRows.splice(index, 1);
+    }
+  
+    // 將 newRow 加入 editedRows 陣列
+    setEditedRows([...editedRows, newRow]);
+    return newRow;
+  };
+  const isDisabled = editedRows.length === 0;
   return (
     <Box sx={{ height: 400, width: '100%' }}>
         <Typography style={{ textAlign: 'center' }} variant="h1" gutterBottom>
@@ -177,11 +225,18 @@ export default function Kind() {
           <Button variant="outlined" startIcon={<AddCircleIcon />} onClick={handleClickOpen}>
             Single Add
           </Button>
+          <Button variant="outlined" disabled={isDisabled} onClick={handleSave}  startIcon={<SaveIcon />}> 
+            Save Update
+          </Button>
+          <Button variant="outlined" disabled={isDisabled} onClick={()=>setEditedRows([])}  startIcon={<ClearIcon />}> 
+            Cancel Update
+          </Button>
         </Stack>
         <DataGrid
             style={{ width: '90%',margin:'auto' }}
             rows={filterRows}
             columns={columns}
+            editMode='row'
             initialState={{
             pagination: {
                 paginationModel: {
@@ -191,6 +246,11 @@ export default function Kind() {
             }}
             pageSizeOptions={[10,15,20]}            
             disableRowSelectionOnClick
+            processRowUpdate={processRowUpdate}
+            onProcessRowUpdateError={error=>alert(error)}
+            onRowEditCommit={(rowId, e) => {
+              handleSave(rowId,e);
+            }}
         />
         <Dialog open={open} onClose={handleClose}>
         <DialogTitle>類型新增</DialogTitle>

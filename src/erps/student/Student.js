@@ -8,6 +8,7 @@ import Button from '@mui/material/Button';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import ClearIcon from '@mui/icons-material/Clear';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -148,6 +149,7 @@ export default function Student() {
           }
         });
         setRows(newData.data.List);
+        setFilterRows(newData.data.List)
       } else {
         alert('刪除失敗')
         // 這裡添加失敗後的處理代碼
@@ -166,57 +168,48 @@ export default function Student() {
     setOpen(false);
   };
   const isDisabled = editedRows.length === 0;
-  const fileInputRef = useRef(null);
-
-  const handleFileSelect = () => {
-    fileInputRef.current.click();
-  };
+    const fileInput = useRef(null);
+    const openFileInput = () => {
+      // 手动触发文件输入的点击事件
+      fileInput.current.click();
+    };
+    const handleFileUpload = async () => {
+      const file = fileInput.current.files[0];
+      if (!file) {
+        console.log("沒有選擇任何文件");
+        return;
+      }
   
-  const handleFileChange = async (event) => {
-    const file = event.target.files[0];
-    if (!file) {
-      alert("請選擇一個檔案！");
-      return;
-    }
+      // 创建一个 FormData 对象并附加文件
+      const formData = new FormData();
+      formData.append('file', file);
   
-    const validMimeTypes = [
-      'application/vnd.ms-excel',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    ];
-  
-    if (!validMimeTypes.includes(file.type)) {
-      alert("請上傳一個有效的Excel檔！");
-      return;
-    }
-  
-    const formData = new FormData();
-    formData.append('file', file);
-  
-    try {
-      const response = await axios.post(`${apiUrl}/member/addInfos`, formData, {
-        headers: {
-          'X-Ap-Token':`${token}`,  // 
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      if(response.status === 200) {
-        alert('批次新增成功')
-        const newData = await axios.get(`${apiUrl}/member/student`, {
-          headers: {
-            'X-Ap-Token':`${token}`
-          }
-        });
-        setRows(newData.data.List);
-        setFilterRows(newData.data.List);
-      }else {
-        alert('批次新增失敗')
-      }     
-    } catch (error) {
-      alert('批次新增失敗,請確認EXCEL資料是否正確')
-    }
-  };
-
-
+      try {
+            const response = await axios.post(`${apiUrl}/member/addInfos`, formData, {
+              headers: {
+                'X-Ap-Token':`${token}`,  // 
+                'Content-Type': 'multipart/form-data',
+              },
+            });
+            if(response.status === 200) {
+              alert('批次新增成功')
+              const newData = await axios.get(`${apiUrl}/member/student`, {
+                headers: {
+                  'X-Ap-Token':`${token}`
+                }
+              });
+              setRows(newData.data.List);
+              setFilterRows(newData.data.List);
+            }else {
+              alert('批次新增失敗')
+            }     
+        } catch (error) {
+          alert('批次新增失敗,請確認EXCEL資料是否正確')
+        }finally {
+          // 清除文件输入的值，以便用户可以重新选择相同的文件
+          fileInput.current.value = null;
+        }
+    };
   const handleSave = async () => {
     const modifiedRows = editedRows.map(item => ({
       ...item,
@@ -311,9 +304,24 @@ export default function Student() {
             'X-Ap-Token':`${token}`
         }
     });
-      if(response.status === 200)
-      alert('成功')
-      handleClose();
+      if(response.status === 200) {
+        alert('成功')
+        handleClose();
+        try {     
+          const response = await axios.get(`${apiUrl}/member/student`, {
+            headers: {
+              'X-Ap-Token':`${token}`
+            }
+          });
+          // 檢查響應的結果，並設置到 state
+          if (response.status === 200) {
+            setRows(response.data.List);
+            setFilterRows(response.data.List);
+          }
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      }
     } catch (error) {
       console.error('Error:', error);
       alert('失敗')
@@ -329,10 +337,10 @@ export default function Student() {
           <input
             type="file"
             style={{ display: 'none' }}
-            ref={fileInputRef}
-            onChange={handleFileChange}
+            ref={fileInput}
+            onChange={handleFileUpload}
           />
-          <Button variant="outlined" startIcon={<PlaylistAddIcon />} onClick={handleFileSelect}>
+          <Button variant="outlined" startIcon={<PlaylistAddIcon />} onClick={openFileInput}>
             Multiple Add
           </Button>
           <Button variant="outlined" startIcon={<AddCircleIcon />} onClick={handleClickOpen}>
@@ -340,6 +348,9 @@ export default function Student() {
           </Button>
           <Button variant="outlined" disabled={isDisabled} onClick={handleSave}  startIcon={<SaveIcon />}> 
             Save Update
+          </Button>
+          <Button variant="outlined" disabled={isDisabled} onClick={()=>setEditedRows([])}  startIcon={<ClearIcon />}> 
+            Cancel Update
           </Button>
         </Stack>
         <DataGrid

@@ -11,7 +11,7 @@ function Error() {
                         transform: 'translate(-50%, -50%)',  // 使用 transform 进行微调
                         zIndex: 2 , // 设置 z-index 以确保按钮出现在其他元素之上
                         fontSize:'40px'}}>
-          Error
+          答錯了~
         </h1>
     ); 
 }

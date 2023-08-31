@@ -141,6 +141,9 @@ export default function GameManage() {
       }
     } catch (error) {
       console.error('錯誤:', error);
+    }finally {
+      // 清除文件输入的值，以便用户可以重新选择相同的文件
+      inputRef.current.value = null;
     }
     // ... (保持之前的代碼不變)
   };
@@ -188,6 +191,9 @@ export default function GameManage() {
       }     
     } catch (error) {
       alert('批次新增失敗,請確認EXCEL資料是否正確')
+    }finally {
+      // 清除文件输入的值，以便用户可以重新选择相同的文件
+      fileInputRef.current.value = null;
     }
   };
 
@@ -295,7 +301,7 @@ export default function GameManage() {
   return (
     <Box sx={{ height: 700, width: '100%' }}>
         <Typography style={{ textAlign: 'center' }} variant="h1" gutterBottom>
-        學員列表
+        遊戲單字列表
         </Typography>
         <GameSearch rows={rows} setFilterRows={setFilterRows}/>
         <Stack direction="row" spacing={2}>

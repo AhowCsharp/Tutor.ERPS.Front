@@ -68,27 +68,33 @@ export default function Sentence() {
   const columns = [
     { field: 'id', headerName: 'ID', width: 50 },
     {
-      field: 'questionSentence',
-      headerName: '問題句子',
-      width: 300,
+      field: 'questionEnglishName',
+      headerName: '音檔英文',
+      width: 100,
+      editable: false,
+    },
+    {
+      field: 'questionChineseName',
+      headerName: '音檔中文',
+      width: 100,
       editable: true,
     },
     {
       field: 'questionAnswer',
       headerName: '問題答案',
-      width: 150,
+      width: 400,
       editable: true,
     },
     {
       field: 'questionSentenceChinese',
       headerName: '句子中文',
-      width: 150,
+      width: 250,
       editable: true,
     },
     {
       field: 'mp3FileUrl',
       headerName: 'mp3',
-      width: 350,
+      width: 150,
       editable: false,
       renderCell: (params) => {
         if (!params.row.mp3FileUrl || params.row.mp3FileUrl === '') {
@@ -105,9 +111,9 @@ export default function Sentence() {
     },
     {
       field: 'questionTypeId',
-      headerName: 'Type_ID',
+      headerName: 'TypeId',
       type:'number',
-      width: 80,
+      width: 50,
       editable: true,
     },
     {
@@ -197,6 +203,9 @@ export default function Sentence() {
       }     
     } catch (error) {
       alert('批次新增失敗,請確認EXCEL資料是否正確')
+    } finally {
+      // 清除文件输入的值，以便用户可以重新选择相同的文件
+      excelInputRef.current.value = null;
     }
   };
 
@@ -246,6 +255,9 @@ export default function Sentence() {
       }
     } catch (error) {
       console.error('錯誤:', error);
+    }finally {
+      // 清除文件输入的值，以便用户可以重新选择相同的文件
+      mp3InputRef.current.value = null;
     }
     // ... (保持之前的代碼不變)
   };
@@ -327,7 +339,7 @@ export default function Sentence() {
 
   const isDisabled = editedRows.length === 0;
   return (
-    <Box sx={{ height: 400, width: '100%' }}>
+    <Box sx={{ height: 600, width: '100%'}}>
         <Typography style={{ textAlign: 'center' }} variant="h1" gutterBottom>
         句子列表
         </Typography>
@@ -373,11 +385,11 @@ export default function Sentence() {
               initialState={{
                   pagination: {
                       paginationModel: {
-                          pageSize: 15,
+                          pageSize: 100,
                       },
                   },
               }}
-              pageSizeOptions={[10,15,20]}            
+              pageSizeOptions={[100,50,20]}            
               disableRowSelectionOnClick
               processRowUpdate={processRowUpdate}
               onProcessRowUpdateError={error=>alert(error)}
