@@ -38,6 +38,9 @@ import GameMp3Player from './GameMp3Player';
 import Combo from '../animate/Combo';
 import Error from '../animate/Error';
 import Correct from '../animate/Correct';
+import ComboCom from '../animateCom/ComboCom'
+import ErrorCom from '../animateCom/ErrorCom';
+import CorrectCom from '../animateCom/CorrectCom';
 import GameOverView from '../animate/GameOverView';
 import { apiUrl } from '../apiUrl/ApiUrl';
 import { token } from '../token/Token'
@@ -76,6 +79,7 @@ export default function StudentGame() {
     const [gameLevel,setGameLevel] = useState('')
     const [userId, setUserId] = useState('')
     const [isGameOver,setGameOver] = useState(null);
+    const [extraWord,setExtraWord] = useState(null);
     const [isPass,setIsPass] = useState(false);
     const [passCount,setPassCount] = useState(0);
     const [dialogOpen,setDialogOpen] = useState(false);
@@ -115,7 +119,8 @@ export default function StudentGame() {
           window.removeEventListener('beforeunload', handleBeforeUnload);
         };
       }, []);
-
+    const startTimer = () => {
+    };
     useEffect(() => {
         setIntroduce(true);
     }, []);
@@ -142,8 +147,9 @@ export default function StudentGame() {
         
                 if (response.status === 200) {
                     setGameWords(response.data.Words);
-                    setBoxWords(shuffleArray([...response.data.Words]));
+                    setBoxWords(shuffleArray([...response.data.Words,response.data.ExtraWord]));
                     setWordsCount(response.data.Words.length);
+                    setExtraWord(response.data.ExtraWord)
                 }
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -158,8 +164,9 @@ export default function StudentGame() {
         
                 if (response.status === 200) {
                     setGameWords(response.data.Words);
-                    setBoxWords(shuffleArray([...response.data.Words]));
+                    setBoxWords(shuffleArray([...response.data.Words,response.data.ExtraWord]));
                     setWordsCount(response.data.Words.length);
+                    setExtraWord(response.data.ExtraWord)
                 }
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -431,7 +438,7 @@ export default function StudentGame() {
     
   return (
     <>
-        {isMobile && !isTablet && !isGameOver ? (
+        { !isGameOver ? (
             <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%',position: 'relative' }}>
                 <Box sx={{width: '100%', height:`${windowDimensions.height}px`,backgroundColor:'black'}}>
                     <Box sx={{width: '100%', height:`${windowDimensions.height/2-50}px`}}>
@@ -483,7 +490,7 @@ export default function StudentGame() {
                                             </Grid>
                                             <Grid item style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                                 {!matchItems.includes(item.word) ? (
-                                                    <GameMp3Player mp3Url={apiUrl + item.mp3Url} fileName={item.word} setAudioName={setAudioName} />
+                                                    <GameMp3Player mp3Url={apiUrl + item.mp3Url} fileName={item.word} setAudioName={setAudioName} startTimer={startTimer}/>
                                                 ) : (
                                                     <AnswerMatch/> // 替代的組件，當條件不滿足時渲染
                                                 )}
@@ -502,7 +509,10 @@ export default function StudentGame() {
                                 <img
                                     src={mobileGameStart === true ? '/images/openbox.png' : '/images/box.png'}
                                     alt={`fire`}
-                                    style={{ width: '80%', height: 'auto' }}
+                                    style={{ 
+                                        width: isMobile ? '80%' : '20%',  // 根據條件變更寬度
+                                        height: 'auto' 
+                                    }}
                                 />
                                 {mobileGameStart === true && (
                                     <Button
@@ -516,7 +526,7 @@ export default function StudentGame() {
                                         zIndex: 1,  
                                         color: 'white',
                                         fontSize: '18px',
-                                        width:'90%'
+                                        width: isMobile ? '90%' : '30%',
                                     }}
                                     onClick={() => setGameAns(item.word)}
                                     >
@@ -526,7 +536,7 @@ export default function StudentGame() {
                                 )}
                                 </div>
                             </Grid>
-                            ))}
+                            ))}                       
                         </Grid>
                     </Box>
                 </Box>
@@ -551,14 +561,23 @@ export default function StudentGame() {
                     Game Start
                 </Button>
                 )}
-                {showCombo === true && (
-                    <Combo comboValue={combo/3}/>
+                {showCombo === true && isMobile === true && (
+                    <Combo />
                 )}   
-                {showError === true && (
+                {showError === true && isMobile === true &&(
                     <Error/>
                 )}
-                {showCorrect === true && (
+                {showCorrect === true && isMobile === true &&(
                     <Correct/>
+                )}
+                {showCombo === true && isMobile === false && (
+                    <ComboCom />
+                )}   
+                {showError === true && isMobile === false &&(
+                    <ErrorCom/>
+                )}
+                {showCorrect === true && isMobile === false &&(
+                    <CorrectCom/>
                 )}
                 <Dialog
                     open={dialogOpen}
@@ -626,7 +645,7 @@ export default function StudentGame() {
                     </List>
                 </Dialog>                          
             </Box>
-        ) : isMobile && !isTablet && isGameOver ? (
+        ) :  isGameOver ? (
             <Box sx={{width: '100%', height:`${windowDimensions.height}px`,backgroundColor:'black',position: 'relative'}}>
                 <GameOverView/>
                 <Button 
@@ -652,168 +671,168 @@ export default function StudentGame() {
                 >
                     Game Restart
                 </Button>
-            </Box>
-        ) : 
-        isTablet ? (
-        <div>你正在使用平板设备。</div>
-        ) : (
-            <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%' }}>      
-            <Box sx={{
-                    width: '20%',
-                    height: '800px', 
-                }}>
-                <Box sx={{ 
-                    width: '20%',
-                    height: '200px', 
-                }}/>
-                <Box sx={{ 
-                    width: '100%',
-                    height: '100px', 
-                    display: 'flex',             // 使用 Flex 布局
-                    justifyContent: 'center',    // 在水平方向上居中
-                    alignItems: 'center',
-                }}>
-                    <Button variant="contained" endIcon={<NotStartedIcon />} onClick={startGameClick}>
-                        {show === true? 'start':'restart'}
-                    </Button>
-                </Box>
-                <Box sx={{ 
-                    width: '100%',
-                    height: '100px', 
-                    display: 'flex',             // 使用 Flex 布局
-                    justifyContent: 'center',    // 在水平方向上居中
-                    alignItems: 'center', 
-                    position: 'relative'
-                }}>
-                    <img
-                        ref={ballRef}
-                        src='/images/ball.png'
-                        alt='answer'
-                        style={{position: 'absolute', top: `${initialBallPosition + ballYPosition}px`, width:70 , height:70}}
-                    />
-                    {answer && (
-                        <span style={{
-                            position: 'absolute',
-                            left: '50%',
-                            transform: 'translate(-50%, -50%)',
-                            backgroundColor:'white',
-                            zIndex: 1,
-                            border: '2px solid black',
-                            padding:'2px',    // 添加边框
-                            borderRadius: '8px',
-                            top: `${initialBallPosition + ballYPosition+30}px`, 
-                        }}>
-                            {answer}
-                        </span>
-                    )}
-                </Box>
-                <Box sx={{ 
-                    width: '20%',
-                    height: '300px', 
-                }}/>
-                <Box sx={{ 
-                    width: '100%',
-                    height: '100px', 
-                    display: 'flex',             // 使用 Flex 布局
-                    justifyContent: 'center',    // 在水平方向上居中
-                    alignItems: 'center', 
-                    position: 'relative'
-                }}>
-                    <img
-                        ref={hoopRef}
-                        src='/images/hoop.png'
-                        alt='answer'
-                        style={{ position: 'absolute', top: '0px',width:100 , height:100}}
-                    />
-                </Box>
-            </Box>
-            <Box
-                sx={{
-                    width: '80%',
-                    height: '800px',
-                    backgroundColor: 'white',
-                    borderLeft: '3px solid black',
-                    borderRight: '3px solid black',
-                    borderBottom: '3px solid black',
-                    borderRadius: '0 0 8px 8px',
-                    marginLeft: 'auto',
-                    backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(${process.env.PUBLIC_URL}/images/gameBack.png)`,
-                    backgroundSize: 'cover',
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: 'center',
-                    flexGrow: 1,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between', 
-                    position: 'relative',
-                    
-                }}  
-            > 
-                { !show && (
-                    <img
-                        src="/images/alarm.gif"
-                        alt="your_alt_text_here"
-                        style={{
-                            position: 'absolute',
-                            top: '50%',
-                            left: '50%',
-                            transform: 'translate(-50%, -50%)',
-                            zIndex: 1  // 如果需要让图片显示在其他元素之上
-                        }}
-                    />
-                )}
-                            { !show && (
-                                <Alert severity="warning">作答時間已結束 Time Up</Alert>
-                )}           
-                <Grid container spacing={2}>
-                {words.map((word, index) => {
-                    const imageName = imageNames[index % imageNames.length];
-                    const initPos = initialPositions[index];
-                    return (
-                        show && (
-                        <Grid item xs={1} key={index} sx={{marginRight:'1%'}}>
-                            <animated.div
-                                // eslint-disable-next-line no-return-assign
-                                ref={(el) => tetrisRefs.current[index] = el}
-                                style={{
-                                    width: 96,
-                                    height: 96,
-                                    borderRadius: 8,
-                                    ...springs1,
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    textAlign: 'center',
-                                    backgroundImage: `url(${process.env.PUBLIC_URL}/images/${imageName}.png)`,
-                                    backgroundSize: 'cover',
-                                    backgroundRepeat: 'no-repeat',
-                                    backgroundPosition: 'center',
-                                }}
-                            >                                              
-                                        <Button variant="contained" size="medium" style={{backgroundColor:'white',color:'black'}} onClick={()=>sendAnswer(word)}>
-                                            {word}
-                                        </Button>
-                            </animated.div>
-                        </Grid>)
-                    );
-                })}                 
-                </Grid>
-                
-                <div ref={containerRef} style={{ display: 'flex', justifyContent: 'space-around', alignSelf: 'flex-end',width:'100%' }}>
-                {Array.from({ length: numImages }).map((_, index) => (
-                    <img
-                    ref={gifRef}
-                    key={index}
-                    src='/images/campfire.gif'
-                    alt={`fire`}
-                    style={{ width: 64, height: 64 }}
-                    />
-                ))}
-                </div>
-            </Box>
-            </Box>
-        )}
+            </Box>):null}
     </>
   );
 }
 
+        // ) : 
+        // isTablet ? (
+        // <div>你正在使用平板设备。</div>
+        // ) : (
+        //     <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%' }}>      
+        //     <Box sx={{
+        //             width: '20%',
+        //             height: '800px', 
+        //         }}>
+        //         <Box sx={{ 
+        //             width: '20%',
+        //             height: '200px', 
+        //         }}/>
+        //         <Box sx={{ 
+        //             width: '100%',
+        //             height: '100px', 
+        //             display: 'flex',             // 使用 Flex 布局
+        //             justifyContent: 'center',    // 在水平方向上居中
+        //             alignItems: 'center',
+        //         }}>
+        //             <Button variant="contained" endIcon={<NotStartedIcon />} onClick={startGameClick}>
+        //                 {show === true? 'start':'restart'}
+        //             </Button>
+        //         </Box>
+        //         <Box sx={{ 
+        //             width: '100%',
+        //             height: '100px', 
+        //             display: 'flex',             // 使用 Flex 布局
+        //             justifyContent: 'center',    // 在水平方向上居中
+        //             alignItems: 'center', 
+        //             position: 'relative'
+        //         }}>
+        //             <img
+        //                 ref={ballRef}
+        //                 src='/images/ball.png'
+        //                 alt='answer'
+        //                 style={{position: 'absolute', top: `${initialBallPosition + ballYPosition}px`, width:70 , height:70}}
+        //             />
+        //             {answer && (
+        //                 <span style={{
+        //                     position: 'absolute',
+        //                     left: '50%',
+        //                     transform: 'translate(-50%, -50%)',
+        //                     backgroundColor:'white',
+        //                     zIndex: 1,
+        //                     border: '2px solid black',
+        //                     padding:'2px',    // 添加边框
+        //                     borderRadius: '8px',
+        //                     top: `${initialBallPosition + ballYPosition+30}px`, 
+        //                 }}>
+        //                     {answer}
+        //                 </span>
+        //             )}
+        //         </Box>
+        //         <Box sx={{ 
+        //             width: '20%',
+        //             height: '300px', 
+        //         }}/>
+        //         <Box sx={{ 
+        //             width: '100%',
+        //             height: '100px', 
+        //             display: 'flex',             // 使用 Flex 布局
+        //             justifyContent: 'center',    // 在水平方向上居中
+        //             alignItems: 'center', 
+        //             position: 'relative'
+        //         }}>
+        //             <img
+        //                 ref={hoopRef}
+        //                 src='/images/hoop.png'
+        //                 alt='answer'
+        //                 style={{ position: 'absolute', top: '0px',width:100 , height:100}}
+        //             />
+        //         </Box>
+        //     </Box>
+        //     <Box
+        //         sx={{
+        //             width: '80%',
+        //             height: '800px',
+        //             backgroundColor: 'white',
+        //             borderLeft: '3px solid black',
+        //             borderRight: '3px solid black',
+        //             borderBottom: '3px solid black',
+        //             borderRadius: '0 0 8px 8px',
+        //             marginLeft: 'auto',
+        //             backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(${process.env.PUBLIC_URL}/images/gameBack.png)`,
+        //             backgroundSize: 'cover',
+        //             backgroundRepeat: 'no-repeat',
+        //             backgroundPosition: 'center',
+        //             flexGrow: 1,
+        //             display: 'flex',
+        //             flexDirection: 'column',
+        //             justifyContent: 'space-between', 
+        //             position: 'relative',
+                    
+        //         }}  
+        //     > 
+        //         { !show && (
+        //             <img
+        //                 src="/images/alarm.gif"
+        //                 alt="your_alt_text_here"
+        //                 style={{
+        //                     position: 'absolute',
+        //                     top: '50%',
+        //                     left: '50%',
+        //                     transform: 'translate(-50%, -50%)',
+        //                     zIndex: 1  // 如果需要让图片显示在其他元素之上
+        //                 }}
+        //             />
+        //         )}
+        //                     { !show && (
+        //                         <Alert severity="warning">作答時間已結束 Time Up</Alert>
+        //         )}           
+        //         <Grid container spacing={2}>
+        //         {words.map((word, index) => {
+        //             const imageName = imageNames[index % imageNames.length];
+        //             const initPos = initialPositions[index];
+        //             return (
+        //                 show && (
+        //                 <Grid item xs={1} key={index} sx={{marginRight:'1%'}}>
+        //                     <animated.div
+        //                         // eslint-disable-next-line no-return-assign
+        //                         ref={(el) => tetrisRefs.current[index] = el}
+        //                         style={{
+        //                             width: 96,
+        //                             height: 96,
+        //                             borderRadius: 8,
+        //                             ...springs1,
+        //                             display: 'flex',
+        //                             justifyContent: 'center',
+        //                             alignItems: 'center',
+        //                             textAlign: 'center',
+        //                             backgroundImage: `url(${process.env.PUBLIC_URL}/images/${imageName}.png)`,
+        //                             backgroundSize: 'cover',
+        //                             backgroundRepeat: 'no-repeat',
+        //                             backgroundPosition: 'center',
+        //                         }}
+        //                     >                                              
+        //                                 <Button variant="contained" size="medium" style={{backgroundColor:'white',color:'black'}} onClick={()=>sendAnswer(word)}>
+        //                                     {word}
+        //                                 </Button>
+        //                     </animated.div>
+        //                 </Grid>)
+        //             );
+        //         })}                 
+        //         </Grid>
+                
+        //         <div ref={containerRef} style={{ display: 'flex', justifyContent: 'space-around', alignSelf: 'flex-end',width:'100%' }}>
+        //         {Array.from({ length: numImages }).map((_, index) => (
+        //             <img
+        //             ref={gifRef}
+        //             key={index}
+        //             src='/images/campfire.gif'
+        //             alt={`fire`}
+        //             style={{ width: 64, height: 64 }}
+        //             />
+        //         ))}
+        //         </div>
+        //     </Box>
+        //     </Box>
+        // )}

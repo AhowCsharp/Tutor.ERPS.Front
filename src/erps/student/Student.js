@@ -86,16 +86,6 @@ export default function Student() {
       editable: true,
     },
     {
-      field: 'createDate',
-      headerName: '創建日期',
-      width: 150,
-      editable: true,
-      renderCell: (params) => {
-        const date = new Date(params.value);
-        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-      },
-    },
-    {
       field: 'startDate',
       headerName: '生效日期',
       width: 150,
@@ -173,43 +163,45 @@ export default function Student() {
       // 手动触发文件输入的点击事件
       fileInput.current.click();
     };
-    const handleFileUpload = async () => {
-      const file = fileInput.current.files[0];
-      if (!file) {
-        console.log("沒有選擇任何文件");
-        return;
-      }
-  
-      // 创建一个 FormData 对象并附加文件
-      const formData = new FormData();
-      formData.append('file', file);
-  
-      try {
-            const response = await axios.post(`${apiUrl}/member/addInfos`, formData, {
+  const handleFileUpload = async () => {
+    const file = fileInput.current.files[0];
+    if (!file) {
+      console.log("沒有選擇任何文件");
+      return;
+    }
+
+    // 创建一个 FormData 对象并附加文件
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+          const response = await axios.post(`${apiUrl}/member/addInfos`, formData, {
+            headers: {
+              'X-Ap-Token':`${token}`,  // 
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+          if(response.status === 200) {
+            alert('批次新增成功')
+            const newData = await axios.get(`${apiUrl}/member/student`, {
               headers: {
-                'X-Ap-Token':`${token}`,  // 
-                'Content-Type': 'multipart/form-data',
-              },
+                'X-Ap-Token':`${token}`
+              }
             });
-            if(response.status === 200) {
-              alert('批次新增成功')
-              const newData = await axios.get(`${apiUrl}/member/student`, {
-                headers: {
-                  'X-Ap-Token':`${token}`
-                }
-              });
-              setRows(newData.data.List);
-              setFilterRows(newData.data.List);
-            }else {
-              alert('批次新增失敗')
-            }     
-        } catch (error) {
-          alert('批次新增失敗,請確認EXCEL資料是否正確')
-        }finally {
-          // 清除文件输入的值，以便用户可以重新选择相同的文件
-          fileInput.current.value = null;
-        }
-    };
+            setRows(newData.data.List);
+            setFilterRows(newData.data.List);
+          }else {
+            alert('批次新增失敗')
+          }     
+      } catch (error) {
+        console.error(error)
+        console.log(error)
+        alert('批次新增失敗,請確認EXCEL資料是否正確')
+      }finally {
+        // 清除文件输入的值，以便用户可以重新选择相同的文件
+        fileInput.current.value = null;
+      }
+  };
   const handleSave = async () => {
     const modifiedRows = editedRows.map(item => ({
       ...item,
@@ -296,37 +288,42 @@ export default function Student() {
 };
 
 
-  const sendMemberAdd = async () => {
-    console.log(member)
-    try {
-      const response = await axios.post(`${apiUrl}/member/addinfo`, member, {
-        headers: {
-            'X-Ap-Token':`${token}`
-        }
-    });
-      if(response.status === 200) {
-        alert('成功')
-        handleClose();
-        try {     
-          const response = await axios.get(`${apiUrl}/member/student`, {
-            headers: {
-              'X-Ap-Token':`${token}`
-            }
+const sendMemberAdd = async () => {
+  // 檢查member的所有屬性是否有值
+  if (Object.values(member).every(value => value != null && value !== '')) {
+      console.log(member)
+      try {
+          const response = await axios.post(`${apiUrl}/member/addinfo`, member, {
+              headers: {
+                  'X-Ap-Token':`${token}`
+              }
           });
-          // 檢查響應的結果，並設置到 state
-          if (response.status === 200) {
-            setRows(response.data.List);
-            setFilterRows(response.data.List);
+          if(response.status === 200) {
+              alert('成功');
+              handleClose();
+              try {     
+                  const response = await axios.get(`${apiUrl}/member/student`, {
+                      headers: {
+                      'X-Ap-Token':`${token}`
+                      }
+                  });
+                  // 檢查響應的結果，並設置到 state
+                  if (response.status === 200) {
+                      setRows(response.data.List);
+                      setFilterRows(response.data.List);
+                  }
+              } catch (error) {
+                  console.error('Error fetching data:', error);
+              }
           }
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        }
+      } catch (error) {
+          console.error('Error:', error);
+          alert('失敗');
       }
-    } catch (error) {
-      console.error('Error:', error);
-      alert('失敗')
-    }  
-  };
+  } else {
+      alert('欄位不得為空');
+  }
+};
   return (
     <Box sx={{ height: 700, width: '100%' }}>
         <Typography style={{ textAlign: 'center' }} variant="h1" gutterBottom>

@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
 import { Input, Slide, Button, IconButton, InputAdornment, ClickAwayListener } from '@mui/material';
+import HomeIcon from '@mui/icons-material/Home';
 // utils
 import { bgBlur } from '../../../utils/cssStyles';
 // component
@@ -34,9 +36,9 @@ const StyledSearchbar = styled('div')(({ theme }) => ({
 
 export default function Searchbar() {
   const [open, setOpen] = useState(false);
-
-  const handleOpen = () => {
-    setOpen(!open);
+  const navigate = useNavigate();
+  const handleHome = () => {
+    navigate('/student', { replace: true });
   };
 
   const handleClose = () => {
@@ -47,9 +49,8 @@ export default function Searchbar() {
     <ClickAwayListener onClickAway={handleClose}>
       <div>
         {!open && (
-          <IconButton onClick={handleOpen}>
-            <Iconify icon="eva:search-fill" />
-          </IconButton>
+          // eslint-disable-next-line react/button-has-type
+          <button style={{background:'transparent',color:'black',border: 'none',outline: 'none'}} onClick={handleHome}>Home</button>
         )}
 
         <Slide direction="down" in={open} mountOnEnter unmountOnExit>
@@ -67,7 +68,7 @@ export default function Searchbar() {
               sx={{ mr: 1, fontWeight: 'fontWeightBold' }}
             />
             <Button variant="contained" onClick={handleClose}>
-              Search
+              Home
             </Button>
           </StyledSearchbar>
         </Slide>

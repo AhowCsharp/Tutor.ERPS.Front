@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 // @mui
 import { useState,useContext,useEffect } from 'react';
 import axios from 'axios';
@@ -21,43 +22,29 @@ import { apiUrl } from '../../../apiUrl/ApiUrl';
 
 export default function LoginForm() {
   const navigate = useNavigate();
-
   const [showPassword, setShowPassword] = useState(false);
   const [account, setAccount] = useState('');
   const [password, setPassword] = useState('');
   const [isLogin, setIsLogin] = useState(false);
   const [open, setOpen] = useState(false);
   const [student,isStudent] = useState(false);
-  const [captchaSrc, setCaptchaSrc] = useState('');
   const [userInput, setUserInput] = useState('');
 
-  useEffect(() => {
-    // 獲取 CAPTCHA 圖像
-    axios.get(`${apiUrl}/login/imgverify`, { responseType: 'arraybuffer' })
-      .then(response => {
-        const base64 = btoa(
-          new Uint8Array(response.data).reduce(
-            (data, byte) => data + String.fromCharCode(byte),
-            '',
-          ),
-        );
-        setCaptchaSrc(`data:image/png;base64,${base64}`);
-      });
-  }, []);
 
-
-
-  const handleValidate = () => {
+  const handleValidate = async () => {
     // 驗證 CAPTCHA
-    axios.post(`${apiUrl}/login/ValidateCaptcha`, { userInput })
-      .then(response => {
-        if (response.data.success) {
-          alert('CAPTCHA 驗證成功');
-        } else {
-          alert('CAPTCHA 驗證失敗');
-        }
-      });
+    const uuid = sessionStorage.getItem('uuid');
+    const response = await axios.post(`${apiUrl}/login/ValidateCaptcha`, { userInput,uuid })
+    if(response.data.isPass) {
+      handleLogin();
+    }else {
+      alert('圖形驗證失敗')     
+    }   
   };
+
+  useEffect(() => {
+    sessionStorage.setItem('uuid',uuidv4())
+  }, []);
   const handleLogin = async () => {
     // handleValidate();
     let isStudentTemp = false;
@@ -70,18 +57,24 @@ export default function LoginForm() {
           sessionStorage.setItem('userName', response.data.adminManageDTO.name);
           sessionStorage.setItem('level', response.data.adminManageDTO.adminLevel);
           isStudentTemp = false;
-        } else {
-          sessionStorage.setItem('userName', response.data.memberDTO.name);
-          sessionStorage.setItem('studentAccount', response.data.memberDTO.account);
-          sessionStorage.setItem('level', response.data.memberDTO.studyLevel);
-          sessionStorage.setItem('id', response.data.memberDTO.id);
-          isStudentTemp = true;
-        }
-        
-        setIsLogin(true);
-        isStudent(isStudentTemp);
-        setOpen(true);
-        
+          setIsLogin(true);
+          isStudent(isStudentTemp);
+          setOpen(true);
+        } else if(response.data.memberDTO.dateStatus) {
+            sessionStorage.setItem('userName', response.data.memberDTO.name);
+            sessionStorage.setItem('studentAccount', response.data.memberDTO.account);
+            sessionStorage.setItem('level', response.data.memberDTO.studyLevel);
+            sessionStorage.setItem('id', response.data.memberDTO.id);
+            isStudentTemp = true;
+            setIsLogin(true);
+            isStudent(isStudentTemp);
+            setOpen(true);
+        } else
+        {
+          alert('帳號密碼已失效,請聯絡管理員開通')
+          sessionStorage.clear();
+          setIsLogin(false);
+        }        
       } else {
         // Handle error
         sessionStorage.clear();
@@ -116,13 +109,24 @@ export default function LoginForm() {
   return (
     <>
       <Stack spacing={3}>
-        <TextField name="account" label="Account" onChange={(e) => setAccount(e.target.value)}/>
+        <TextField name="account" label="Account" 
+        onChange={(e) => setAccount(e.target.value)}
+        onKeyPress={(e) => {
+          if (e.key === 'Enter') {
+            handleValidate();  // 呼叫你的登錄函數
+          }
+        }}/>
 
         <TextField
           name="password"
           label="Password"
           type={showPassword ? 'text' : 'password'}
           onChange={(e) => setPassword(e.target.value)}
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') {
+              handleValidate();  // 呼叫你的登錄函數
+            }
+          }}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -135,10 +139,19 @@ export default function LoginForm() {
         />
         <div style={{ display: 'flex', height: '100%' }}>
             <Box style={{ width: '20%', height: '100%'}}>
-                <img src={captchaSrc} alt="CAPTCHA" style={{ height: '100%', width: 'auto' }} />
+              {sessionStorage.getItem('uuid') !== ""?
+                <img src={`${apiUrl}/login/imgverify?uuid=${sessionStorage.getItem('uuid')}`} alt="CAPTCHA" style={{ height: '100%', width: 'auto' }} />
+                :null
+              }
             </Box>
             <Box style={{ width: '70%', height: '100%', border: '1px',marginLeft:'25px' }}>
-                <TextField name="verify" label="圖形驗證" size="small" onChange={(e) => setUserInput(e.target.value)} />
+                <TextField name="verify" label="圖形驗證" size="small" 
+                onChange={(e) => setUserInput(e.target.value)} 
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    handleValidate();  // 呼叫你的登錄函數
+                  }
+                }}/>
             </Box>
         </div>
       </Stack>
@@ -150,7 +163,7 @@ export default function LoginForm() {
         </Link>
       </Stack> */}
 
-      <LoadingButton style={{marginTop:'20px'}} fullWidth size="large" type="submit" variant="contained" onClick={handleLogin}>
+      <LoadingButton style={{marginTop:'20px'}} fullWidth size="large" type="submit" variant="contained" onClick={handleValidate}>
         Login
       </LoadingButton>
       <Dialog

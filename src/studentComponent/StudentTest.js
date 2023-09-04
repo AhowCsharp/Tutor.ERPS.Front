@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { isMobile,isTablet } from 'react-device-detect';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import ButtonGroup from '@mui/material/ButtonGroup';
@@ -15,6 +16,7 @@ import AlertTitle from '@mui/material/AlertTitle';
 import Stack from '@mui/material/Stack';
 import axios from 'axios';
 import AudioHasTimer from '../erps/audio/AudioHasTimer';
+import StudentAnswerView from './StudentAnswerView';
 import QuestionSearch from './QuestionSearch';
 import { apiUrl } from '../apiUrl/ApiUrl';
 import { token } from '../token/Token'
@@ -124,48 +126,56 @@ export default function StudentTest() {
     ];
     return (
         <>
-            <Box
-                sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                '& > *': {
-                    m: 1,
-                },
-                }}
-            >
-                <ButtonGroup size="large" aria-label="large button group">
-                {types.map((type, index) => (
-                <Button key={index} onClick={() =>handleGetTest(type.type)} 
-                disabled={type.studyLevel > parseInt(sessionStorage.getItem('level'), 10)}
-                >
-                    {type.type}
-                </Button>
-                ))}
-                </ButtonGroup>
-                <Alert severity="info">
-                    <AlertTitle>測驗類型</AlertTitle>
-                    目前 - <strong>{chooseType}</strong> <br/>
-                    <strong>若要搜尋1.未通關請輸入:f 2.已通關:t 3.尚未作答:n</strong>
-                </Alert>
-            </Box>
-            <Box sx={{ height: 300, width: '100%' }}>
-                <QuestionSearch rows={questions} setFilterRows={setFilterRows}/>
-                <DataGrid
-                    rows={filterRows}
-                    columns={columns}
-                    rowHeight={150}
-                    initialState={{
-                    pagination: {
-                        paginationModel: {
-                        pageSize: 1,
-                        },
-                    },
-                    }}
-                    pageSizeOptions={[1]}
-                    disableRowSelectionOnClick
-                />            
-            </Box>
+          {/* {!isMobile? (
+            <>
+              <Box
+              sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              '& > *': {
+                  m: 1,
+              },
+              }}
+          >
+              <ButtonGroup size="large" aria-label="large button group">
+              {types.map((type, index) => (
+              <Button key={index} onClick={() =>handleGetTest(type.type)} 
+              disabled={type.studyLevel > parseInt(sessionStorage.getItem('level'), 10)}
+              >
+                  {type.type}
+              </Button>
+              ))}
+              </ButtonGroup>
+              <Alert severity="info">
+                  <AlertTitle>測驗類型</AlertTitle>
+                  目前 - <strong>{chooseType}</strong> <br/>
+                  <strong>若要搜尋1.未通關請輸入:f 2.已通關:t 3.尚未作答:n</strong>
+              </Alert>
+          </Box>
+          <Box sx={{ height: 300, width: '100%' }}>
+              <QuestionSearch rows={questions} setFilterRows={setFilterRows}/>
+              <DataGrid
+                  rows={filterRows}
+                  columns={columns}
+                  rowHeight={150}
+                  initialState={{
+                  pagination: {
+                      paginationModel: {
+                      pageSize: 1,
+                      },
+                  },
+                  }}
+                  pageSizeOptions={[1]}
+                  disableRowSelectionOnClick
+              />            
+          </Box>
+            </> 
+            ) : null}
+        {isMobile? (
+            <> */}
+              <StudentAnswerView/>
+
         </>
     );
   }

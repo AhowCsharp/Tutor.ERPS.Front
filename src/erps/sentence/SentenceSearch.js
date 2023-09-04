@@ -40,7 +40,7 @@ export default function SentenceSearch({ rows, setFilterRows }) {
     } else {
       // 過濾學生列表
       const filteredSentences = rows.filter((Sentence) =>
-        Sentence.questionSentence.toLowerCase().includes(searchValue.toLowerCase())||
+        Sentence.questionEnglishName.toLowerCase().includes(searchValue.toLowerCase())||
         Sentence.typeName.toString().includes(searchValue)
       );
 

@@ -7,7 +7,7 @@ function Error() {
                     style={{color:'red',                        
                         position: 'absolute',  // 绝对定位
                         top: '25%',  // 从顶部偏移50%
-                        left: '40%',  // 从左侧偏移50%
+                        left: '35%',  // 从左侧偏移50%
                         transform: 'translate(-50%, -50%)',  // 使用 transform 进行微调
                         zIndex: 2 , // 设置 z-index 以确保按钮出现在其他元素之上
                         fontSize:'40px'}}>

@@ -27,7 +27,7 @@ const StyledRoot = styled(AppBar)(({ theme }) => ({
     width: `calc(100% - ${NAV_WIDTH + 1}px)`,
   },
 }));
-
+// width: `calc(100% - ${NAV_WIDTH + 1}px)`,
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   minHeight: HEADER_MOBILE,
   [theme.breakpoints.up('lg')]: {
@@ -58,7 +58,8 @@ export default function Header({ onOpenNav }) {
         </IconButton>
 
         <Searchbar />
-        <Box sx={{ flexGrow: 1 }} />
+        <Box sx={{ flexGrow: 1 }}/>
+
 
         <Stack
           direction="row"
@@ -68,9 +69,10 @@ export default function Header({ onOpenNav }) {
             sm: 1,
           }}
         >
-          <LanguagePopover />
-          <NotificationsPopover />
+          {/* <LanguagePopover />
+          <NotificationsPopover /> */}
           <AccountPopover />
+          666
         </Stack>
       </StyledToolbar>
     </StyledRoot>

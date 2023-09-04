@@ -21,6 +21,7 @@ import GameManage from './erps/gameManage/GameManage';
 import StudentDashboardAppPage from './pages/StudentDashboardAppPage'
 import StudentProfile from './studentComponent/StudentProfile';
 import ChooseModel from './studentComponent/ChooseModel';
+import PointManage from './erps/ponit/PointManage';
 
 
 // ----------------------------------------------------------------------
@@ -50,6 +51,7 @@ export default function Router() {
         { path: 'kind', element: <Kind /> },
         { path: 'loglist', element: <StudentLogList /> },
         { path: 'gameManage', element: <GameManage /> },
+        { path: 'testPoint', element: <PointManage /> },
       ],
     },
     {
