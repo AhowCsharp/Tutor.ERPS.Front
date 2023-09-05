@@ -76,14 +76,14 @@ export default function StudentGame() {
     const imageNames = ['I', 'L', 'T', 'Z'];
     const [gameWords,setGameWords] = useState([])
     const [boxWords,setBoxWords] = useState([])
-    const [gameLevel,setGameLevel] = useState('')
+    const [gameLevel,setGameLevel] = useState('1')
     const [userId, setUserId] = useState('')
     const [isGameOver,setGameOver] = useState(null);
     const [extraWord,setExtraWord] = useState(null);
     const [isPass,setIsPass] = useState(false);
     const [passCount,setPassCount] = useState(0);
     const [dialogOpen,setDialogOpen] = useState(false);
-
+    const [buttonCanUse,setButtonCanUse] = useState(false);
 
 
     const [ballYPosition, setBallYPosition] = useState(0);
@@ -120,10 +120,16 @@ export default function StudentGame() {
         };
       }, []);
     const startTimer = () => {
+        setButtonCanUse(true);
     };
     useEffect(() => {
         setIntroduce(true);
     }, []);
+
+    const setAnswerAndButton = (word) => {
+        setGameAns(word);
+        setButtonCanUse(false);
+    }
 
     const fetchDataAndUpdate = async (level) => {
         setDialogOpen(false);
@@ -139,7 +145,7 @@ export default function StudentGame() {
             }
         if(level === null || level === undefined) {
             try {
-                const response = await axios.get(`${apiUrl}/game/words?gamer=${sessionStorage.getItem('id')}&level=${sessionStorage.getItem('gameLevel')}`, {
+                const response = await axios.get(`${apiUrl}/game/words?gamer=${sessionStorage.getItem('id')}&level=${bigLevel}`, {
                     headers: {
                         'X-Ap-Token': `${token}`
                     }
@@ -149,14 +155,15 @@ export default function StudentGame() {
                     setGameWords(response.data.Words);
                     setBoxWords(shuffleArray([...response.data.Words,response.data.ExtraWord]));
                     setWordsCount(response.data.Words.length);
-                    setExtraWord(response.data.ExtraWord)
+                    setExtraWord(response.data.ExtraWord);
+                    handleClearError();
                 }
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
         }else {
             try {
-                const response = await axios.get(`${apiUrl}/game/words?gamer=${sessionStorage.getItem('id')}&level=${level}`, {
+                const response = await axios.get(`${apiUrl}/game/words?gamer=${sessionStorage.getItem('id')}&level=${bigLevel}`, {
                     headers: {
                         'X-Ap-Token': `${token}`
                     }
@@ -166,7 +173,8 @@ export default function StudentGame() {
                     setGameWords(response.data.Words);
                     setBoxWords(shuffleArray([...response.data.Words,response.data.ExtraWord]));
                     setWordsCount(response.data.Words.length);
-                    setExtraWord(response.data.ExtraWord)
+                    setExtraWord(response.data.ExtraWord);
+                    handleClearError();
                 }
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -185,6 +193,7 @@ export default function StudentGame() {
             setPassCount(0);
             setGameLevel('1');
             setbigLevel('1');
+            setGameLevel('1');
         }
     }, [isGameOver]); // 将 isGameOver 添加到依赖数组中，确保在其变化时执行
     
@@ -317,7 +326,7 @@ export default function StudentGame() {
         try {
             const errorLogData = {
             errWord: errorWord,
-            level: parseInt(gameLevel, 10), // Convert gameLevel to number
+            level: parseInt(bigLevel, 10), // Convert gameLevel to number
             id: sessionStorage.getItem('id')
             };
             const response = await axios.post(`${apiUrl}/game/errorlog`, errorLogData, {
@@ -381,10 +390,11 @@ export default function StudentGame() {
             sessionStorage.setItem('gameLevel',(currentGameLevel+1).toString());
             setGameLevel(currentGameLevel+1); 
             setDialogOpen(true);   
-            setMatchItems([])
-            if((currentGameLevel+1)%30 === 0) {
-                setbigLevel(bigLevel+1);
-            }       
+            setMatchItems([])           
+            if ((currentGameLevel + 1) % 30 === 0) {
+                const newBigLevel = parseInt(bigLevel, 10) + 1;  // 转换为数字并加 1
+                setbigLevel(newBigLevel.toString());  // 转回为字符串并设置
+            }     
         }
 
       }, [isPass]);
@@ -402,7 +412,10 @@ export default function StudentGame() {
 
       useEffect(() => {
         if(life === 0 || life < 0) {
-            setGameOver(true)
+            setGameOver(true);
+            setGameLevel('1');
+            setShowCombo(false);
+            setCombo(0);
         }
       }, [life]);
       
@@ -413,7 +426,7 @@ export default function StudentGame() {
             setScore(score+30);
           const timeout = setTimeout(() => {
             setShowCombo(false);
-          }, 2000);
+          }, 1000);
     
           return () => {
             clearTimeout(timeout);
@@ -518,6 +531,7 @@ export default function StudentGame() {
                                     <Button
                                     variant="outlined"
                                     color="primary"
+                                    disabled={!buttonCanUse}
                                     style={{
                                         position: 'absolute', 
                                         top: '50%',  
@@ -526,9 +540,10 @@ export default function StudentGame() {
                                         zIndex: 1,  
                                         color: 'white',
                                         fontSize: '18px',
+                                        textTransform:'lowercase',
                                         width: isMobile ? '90%' : '30%',
                                     }}
-                                    onClick={() => setGameAns(item.word)}
+                                    onClick={() => setAnswerAndButton(item.word)}
                                     >
                                     {item.word} <br/>
                                     {item.wordChinese}

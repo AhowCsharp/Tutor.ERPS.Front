@@ -113,7 +113,13 @@ export default function Sentence() {
       field: 'questionTypeId',
       headerName: 'TypeId',
       type:'number',
-      width: 50,
+      width: 80,
+      editable: true,
+    },
+    {
+      field: 'questionHint',
+      headerName: '提示一',
+      width: 250,
       editable: true,
     },
     {

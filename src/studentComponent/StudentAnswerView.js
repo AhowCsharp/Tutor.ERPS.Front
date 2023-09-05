@@ -312,7 +312,7 @@ export default function StudentAnswerView() {
                             justifyContent="center" // 水平居中
                             sx={{ flexWrap: 'wrap' }} // 自动换行
                         >
-                            {types.map((type, index) => (
+                            {types.sort((a, b) => a.studyLevel - b.studyLevel).map((type, index) => (
                                 <Button key={index}
                                     disabled={type.studyLevel > parseInt(sessionStorage.getItem('level'), 10)}
                                     style={{
