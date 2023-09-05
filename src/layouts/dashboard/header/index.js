@@ -72,7 +72,6 @@ export default function Header({ onOpenNav }) {
           {/* <LanguagePopover />
           <NotificationsPopover /> */}
           <AccountPopover />
-          666
         </Stack>
       </StyledToolbar>
     </StyledRoot>

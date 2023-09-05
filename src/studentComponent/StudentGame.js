@@ -520,7 +520,7 @@ export default function StudentGame() {
                             <Grid item xs={4} key={item.id}>
                                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
                                 <img
-                                    src={mobileGameStart === true ? '/images/openbox.png' : '/images/box.png'}
+                                    src={mobileGameStart === true ? '/images/nobox.png' : '/images/box.png'}
                                     alt={`fire`}
                                     style={{ 
                                         width: isMobile ? '80%' : '20%',  // 根據條件變更寬度

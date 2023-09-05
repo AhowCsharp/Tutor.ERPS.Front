@@ -1,4 +1,4 @@
-import { useEffect,useRef  } from 'react';
+import { useEffect,useRef,useState  } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as React from 'react';
 import axios from 'axios';
@@ -49,6 +49,7 @@ export default function Sentence() {
   const [fileName, setFileName] = React.useState("");
   const [open, setOpen] = React.useState(false);
   const [editedRows, setEditedRows] = React.useState([]);
+  const [openForm,setOpenForm]= useState(false);
   const [typeOptions , setTypeOptions] = React.useState([])
   const [sentence,setSentence] = React.useState({
     mp3File:null,
@@ -57,6 +58,38 @@ export default function Sentence() {
     typeName:'',
     questionAnswer:''
   })
+
+  const [member,setMember] = React.useState({
+    name:'',
+    account:'',
+    password:'',
+    email:'',
+    studyLevel:0,
+    creator:'ahow',
+    editor:'ahow',
+    beDeleted:0,
+    status:1,
+    id:0
+  })
+  const handleFormClickOpen = () => {
+    setOpenForm(true);
+  };
+
+  const handleFormClose = () => {
+    setOpenForm(false);
+  };
+  const handleRegister = async () => {
+    // 驗證 CAPTCHA
+    console.log(member);
+    handleFormClose();
+    // const uuid = sessionStorage.getItem('uuid');
+    // const response = await axios.post(`${apiUrl}/login/ValidateCaptcha`, { userInput,uuid })
+    // if(response.data.isPass) {
+    //   handleLogin();
+    // }else {
+    //   alert('圖形驗證失敗')     
+    // }   
+  };
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -344,6 +377,24 @@ export default function Sentence() {
   };
 
   const isDisabled = editedRows.length === 0;
+
+  const handleInputChange = (event, propertyName) => {
+    let value = event.target.value;
+
+    if (propertyName === 'studyLevel' && value) {
+        value = Number(value);
+        // eslint-disable-next-line no-restricted-globals
+        if (isNaN(value)) {
+            console.warn('studyLevel requires a numeric value');
+            return;
+        }
+    }
+
+    setMember((prevData) => ({
+      ...prevData,
+      [propertyName]: value,
+    }));
+  };
   return (
     <Box sx={{ height: 600, width: '100%'}}>
         <Typography style={{ textAlign: 'center' }} variant="h1" gutterBottom>
@@ -369,6 +420,9 @@ export default function Sentence() {
         />
           <Button variant="outlined" startIcon={<AddCircleIcon />} onClick={handleMp3Upload}>
             Mp3 Add
+          </Button>
+          <Button variant="outlined" startIcon={<AddCircleIcon />} onClick={handleMp3Upload}>
+            Single Add
           </Button>
           <Button variant="outlined" disabled={isDisabled} onClick={handleSave}  startIcon={<SaveIcon />}> 
             Save Update
@@ -403,6 +457,60 @@ export default function Sentence() {
                 handleSave(rowId,e);
               }}
           />
+          <Dialog open={openForm} onClose={handleFormClose}>
+        <DialogTitle>歐美多益學苑體驗</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+                註冊試玩帳號
+          </DialogContentText>
+          <Box
+            component="form"
+            sx={{
+              '& .MuiTextField-root': { m: 1, width: '25ch' },
+            }}
+            noValidate
+            autoComplete="off"
+          >
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="音檔英文"
+            variant="standard"
+            onChange={(e) => handleInputChange(e, 'name')}
+          />
+          <TextField
+            autoFocus
+            margin="dense"
+            id="account"
+            label="音檔中文"
+            variant="standard"
+            onChange={(e) => handleInputChange(e, 'account')}
+          />
+          <TextField
+            autoFocus
+            margin="dense"
+            id="email"
+            label="問題答案"
+            variant="standard"
+            onChange={(e) => handleInputChange(e, 'email')}
+          />
+          <TextField
+            autoFocus
+            margin="dense"
+            id="password"
+            label="句子"
+            fullWidth
+            variant="standard"
+            onChange={(e) => handleInputChange(e, 'password')}
+          />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleFormClose}>取消</Button>
+          <Button onClick={handleRegister}>註冊</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

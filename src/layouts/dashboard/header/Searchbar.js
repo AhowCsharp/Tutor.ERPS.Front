@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { isMobile } from 'react-device-detect';
 // @mui
 import { styled } from '@mui/material/styles';
 import { Input, Slide, Button, IconButton, InputAdornment, ClickAwayListener } from '@mui/material';
@@ -40,6 +41,7 @@ export default function Searchbar() {
   const handleHome = () => {
     navigate('/student', { replace: true });
   };
+  const isStudent = sessionStorage.getItem('studentAccount') !== null;
 
   const handleClose = () => {
     setOpen(false);
@@ -48,7 +50,7 @@ export default function Searchbar() {
   return (
     <ClickAwayListener onClickAway={handleClose}>
       <div>
-        {!open && (
+        {!open && isStudent && (
           // eslint-disable-next-line react/button-has-type
           <button style={{background:'transparent',color:'black',border: 'none',outline: 'none'}} onClick={handleHome}>Home</button>
         )}
