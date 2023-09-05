@@ -29,7 +29,36 @@ export default function LoginForm() {
   const [open, setOpen] = useState(false);
   const [student,isStudent] = useState(false);
   const [userInput, setUserInput] = useState('');
+  const [openForm,setOpenForm]= useState(false);
+  const currentDate = new Date().toLocaleDateString('en-CA');
+  const nowDate = new Date();
+  const yyyy = nowDate.getFullYear();
+  const mm = String(nowDate.getMonth() + 1).padStart(2, '0'); // 月份从0开始，所以需要+1
+  const dd = String(nowDate.getDate()+7).padStart(2, '0');
+  const formatEndDate = `${yyyy}-${mm}-${dd}`;
+  const [member,setMember] = React.useState({
+    name:'',
+    account:'',
+    password:'',
+    email:'',
+    createDate:currentDate,
+    endDate:formatEndDate,
+    startDate:currentDate,
+    studyLevel:0,
+    creator:'ahow',
+    editor:'ahow',
+    beDeleted:0,
+    status:1,
+    id:0
+  })
 
+  const handleFormClickOpen = () => {
+    setOpenForm(true);
+  };
+
+  const handleFormClose = () => {
+    setOpenForm(false);
+  };
 
   const handleValidate = async () => {
     // 驗證 CAPTCHA
@@ -40,6 +69,19 @@ export default function LoginForm() {
     }else {
       alert('圖形驗證失敗')     
     }   
+  };
+
+  const handleRegister = async () => {
+    // 驗證 CAPTCHA
+    console.log(member);
+    handleFormClose();
+    // const uuid = sessionStorage.getItem('uuid');
+    // const response = await axios.post(`${apiUrl}/login/ValidateCaptcha`, { userInput,uuid })
+    // if(response.data.isPass) {
+    //   handleLogin();
+    // }else {
+    //   alert('圖形驗證失敗')     
+    // }   
   };
 
   useEffect(() => {
@@ -105,6 +147,23 @@ export default function LoginForm() {
   const studentNav = () => {
     navigate('/student', { replace: true });  // Navigate after closing the dialog
   };
+  const handleInputChange = (event, propertyName) => {
+    let value = event.target.value;
+
+    if (propertyName === 'studyLevel' && value) {
+        value = Number(value);
+        // eslint-disable-next-line no-restricted-globals
+        if (isNaN(value)) {
+            console.warn('studyLevel requires a numeric value');
+            return;
+        }
+    }
+
+    setMember((prevData) => ({
+      ...prevData,
+      [propertyName]: value,
+    }));
+  };
 
   return (
     <>
@@ -156,12 +215,11 @@ export default function LoginForm() {
         </div>
       </Stack>
 
-      {/* <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
-        <Checkbox name="remember" label="Remember me" />
-        <Link variant="subtitle2" underline="hover">
-          Forgot password?
+      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
+        <Link variant="subtitle2" underline="hover" onClick={handleFormClickOpen}>
+          註冊帳號試玩
         </Link>
-      </Stack> */}
+      </Stack>
 
       <LoadingButton style={{marginTop:'20px'}} fullWidth size="large" type="submit" variant="contained" onClick={handleValidate}>
         Login
@@ -180,6 +238,62 @@ export default function LoginForm() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>OK</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={openForm} onClose={handleFormClose}>
+        <DialogTitle>歐美多益學苑體驗</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+                註冊試玩帳號
+          </DialogContentText>
+          <Box
+            component="form"
+            sx={{
+              '& .MuiTextField-root': { m: 1, width: '25ch' },
+            }}
+            noValidate
+            autoComplete="off"
+          >
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="姓名"
+            variant="standard"
+            onChange={(e) => handleInputChange(e, 'name')}
+          />
+          <TextField
+            autoFocus
+            margin="dense"
+            id="account"
+            label="帳號"
+            variant="standard"
+            onChange={(e) => handleInputChange(e, 'account')}
+          />
+          <TextField
+            autoFocus
+            margin="dense"
+            id="email"
+            label="信箱"
+            type="email"
+            variant="standard"
+            onChange={(e) => handleInputChange(e, 'email')}
+          />
+          <TextField
+            autoFocus
+            margin="dense"
+            id="password"
+            label="密碼"
+            fullWidth
+            variant="standard"
+            onChange={(e) => handleInputChange(e, 'password')}
+          />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>取消</Button>
+          <Button onClick={handleRegister}>註冊</Button>
         </DialogActions>
       </Dialog>
     </>

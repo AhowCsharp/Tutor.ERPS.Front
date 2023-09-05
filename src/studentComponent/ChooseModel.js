@@ -19,6 +19,12 @@ export default function ChooseModel() {
     const logNav = () => {
         navigate('/student/log');  // Navigate after closing the dialog
     };
+    React.useEffect(() => {
+      const token = sessionStorage.getItem('studentAccount');
+      if (!token) {
+        navigate('/login');
+      }
+    }, [navigate]);
 
     return (
       <>
